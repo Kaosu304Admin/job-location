@@ -7,12 +7,10 @@
 
   <style>
     :root{
-      /* ===== สีบริษัท ===== */
       --brand-red:#c1121f;
       --brand-red-dark:#9b0f18;
       --brand-blue:#1d4ed8;
 
-      /* ===== สีระบบ ===== */
       --bg:#f8fafc;
       --card:#ffffff;
       --border:#e5e7eb;
@@ -29,84 +27,34 @@
     }
     .wrap{max-width:1100px;margin:0 auto;padding:14px}
 
-    /* ===== Header ===== */
-    .header{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      margin-bottom:12px;
-    }
+    .header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
     .logo-box{
-      width:40px;
-      height:40px;
-      border-radius:10px;
-      background:#fff;
-      border:1px solid var(--border);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      overflow:hidden;
-      flex:0 0 auto;
+      width:40px;height:40px;border-radius:10px;background:#fff;border:1px solid var(--border);
+      display:flex;align-items:center;justify-content:center;overflow:hidden;flex:0 0 auto;
     }
     .logo-box img{
-      max-width:100%;
-      max-height:100%;
-      object-fit:contain;
-      display:block;
-      margin:auto;
+      max-width:100%;max-height:100%;object-fit:contain;display:block;margin:auto;
       transform:translateY(-1px);
     }
     h1{font-size:18px;margin:0}
     .subtitle{font-size:13px;color:var(--muted)}
 
-    /* ===== Card / Layout ===== */
-    .card{
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:14px;
-      padding:12px;
-      margin:12px 0;
-    }
+    .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px;margin:12px 0}
     .row{display:flex;gap:8px;flex-wrap:wrap}
 
-    input,button{
-      height:44px;
-      border-radius:12px;
-      padding:0 12px;
-      font-size:15px;
-    }
-    input{
-      flex:1;
-      min-width:200px;
-      border:1px solid var(--border);
-      outline:none;
-    }
+    input,button{height:44px;border-radius:12px;padding:0 12px;font-size:15px}
+    input{flex:1;min-width:200px;border:1px solid var(--border);outline:none}
+    input:focus{border-color:rgba(29,78,216,.45);box-shadow:0 0 0 3px rgba(29,78,216,.12)}
 
-    /* ===== Buttons ===== */
-    button{
-      background:var(--brand-red);
-      color:#fff;
-      border:none;
-      cursor:pointer;
-    }
+    button{background:var(--brand-red);color:#fff;border:none;cursor:pointer}
     button:hover{background:var(--brand-red-dark)}
-    button.secondary{
-      background:#eef2ff;
-      color:var(--brand-blue);
-      border:1px solid #c7d2fe;
-    }
+    button.secondary{background:#eef2ff;color:var(--brand-blue);border:1px solid #c7d2fe}
     button:disabled{opacity:.5;cursor:not-allowed}
 
     .muted{font-size:13px;color:var(--muted);line-height:1.4}
 
-    /* ===== Grid ===== */
-    .grid{
-      display:grid;
-      gap:12px;
-      grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));
-    }
+    .grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));}
 
-    /* ===== STEP 3: Card แนวนอน ===== */
     .item{
       border:1px solid var(--border);
       border-radius:14px;
@@ -116,22 +64,12 @@
       gap:12px;
       align-items:flex-start;
       cursor:pointer;
+      transition:.12s ease;
     }
     .item:hover{background:#fafafa}
-
     .item .info{flex:1}
-
-    .item .thumb{
-      width:120px;
-      min-width:120px;
-    }
-    .item .thumb img{
-      width:100%;
-      max-height:90px;
-      object-fit:cover;
-      border-radius:10px;
-      margin:0;
-    }
+    .item .thumb{width:120px;min-width:120px}
+    .item .thumb img{width:100%;max-height:90px;object-fit:cover;border-radius:10px;margin:0;display:block}
 
     .tag{
       display:inline-block;
@@ -145,44 +83,26 @@
     }
     .k{font-weight:600}
 
-    /* ===== Mobile ===== */
     @media (max-width:640px){
       .grid{grid-template-columns:1fr}
       .item{align-items:center}
       .item .thumb{width:90px;min-width:90px}
       button{flex:1}
+      .logo-box{width:38px;height:38px}
     }
 
-    /* ===== STEP 3: Modal ===== */
     .modal{
-      position:fixed;
-      inset:0;
-      background:rgba(0,0,0,.7);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      z-index:9999;
+      position:fixed;inset:0;background:rgba(0,0,0,.7);
+      display:none;align-items:center;justify-content:center;z-index:9999;
     }
-    .modal-content{
-      background:#fff;
-      border-radius:14px;
-      padding:10px;
-      max-width:95vw;
-      max-height:95vh;
-    }
-    .modal-content img{
-      width:100%;
-      max-height:90vh;
-      object-fit:contain;
-      border-radius:10px;
-    }
+    .modal-content{background:#fff;border-radius:14px;padding:10px;max-width:95vw;max-height:95vh}
+    .modal-content img{width:100%;max-height:90vh;object-fit:contain;border-radius:10px;display:block}
   </style>
 </head>
 
 <body>
 <div class="wrap">
 
-  <!-- ===== Header ===== -->
   <div class="header">
     <div class="logo-box">
       <img src="assets/logo.png" alt="Company Logo">
@@ -193,7 +113,6 @@
     </div>
   </div>
 
-  <!-- ===== Search ===== -->
   <div class="card">
     <div class="row">
       <input id="q">
@@ -205,12 +124,15 @@
       <input id="cus">
       <button class="secondary" id="btnCus"></button>
     </div>
+    <div class="muted" style="margin-top:10px">
+      • หากยังไม่ค้นหา ระบบจะแสดงรายการฐานข้อมูลด้านล่าง<br>
+      • สามารถค้นหาได้ทั้ง “ชื่องาน / ตำแหน่งจัดเก็บ / ลูกค้า”
+    </div>
   </div>
 
   <div id="status" class="muted"></div>
   <div id="out" class="card" style="display:none"></div>
 
-  <!-- ===== List ===== -->
   <div class="card">
     <div class="row" style="justify-content:space-between;align-items:center">
       <b id="allItemsTitle"></b>
@@ -221,15 +143,13 @@
 
 </div>
 
-<!-- ===== Modal ===== -->
-<div id="layoutModal" class="modal" onclick="closeModal()">
-  <div class="modal-content" onclick="event.stopPropagation()">
-    <img id="modalImage" src="">
+<div id="layoutModal" class="modal">
+  <div class="modal-content">
+    <img id="modalImage" src="" alt="layout">
   </div>
 </div>
 
 <script>
-/* ===== STEP 2: WORDS ===== */
 const WORDS = {
   appTitle:"ระบบระบุตำแหน่งงาน",
   subtitle:"ค้นหาตำแหน่งจัดเก็บ • ชื่องาน • ลูกค้า",
@@ -248,70 +168,177 @@ const WORDS = {
   notFound:"ไม่พบข้อมูล"
 };
 
+const API_BASE = "https://script.google.com/macros/s/AKfycbyh1nb5-K1oI5Sa9qeaVirBfj_ent1OW0j8Mzpvyk_JOFQKWWwyut2A_GWykkTA8fsBvA/exec";
+
+const el = {
+  appTitle: document.getElementById("appTitle"),
+  appSubtitle: document.getElementById("appSubtitle"),
+  q: document.getElementById("q"),
+  loc: document.getElementById("loc"),
+  cus: document.getElementById("cus"),
+  btnSearch: document.getElementById("btnSearch"),
+  btnLoc: document.getElementById("btnLoc"),
+  btnCus: document.getElementById("btnCus"),
+  btnMore: document.getElementById("btnMore"),
+  allItemsTitle: document.getElementById("allItemsTitle"),
+  status: document.getElementById("status"),
+  out: document.getElementById("out"),
+  list: document.getElementById("list"),
+  layoutModal: document.getElementById("layoutModal"),
+  modalImage: document.getElementById("modalImage")
+};
+
 function applyWords(){
-  appTitle.textContent = WORDS.appTitle;
-  appSubtitle.textContent = WORDS.subtitle;
-  q.placeholder = WORDS.placeholderSearch;
-  loc.placeholder = WORDS.placeholderLocation;
-  cus.placeholder = WORDS.placeholderCustomer;
-  btnSearch.textContent = WORDS.btnSearch;
-  btnLoc.textContent = WORDS.btnLocation;
-  btnCus.textContent = WORDS.btnCustomer;
-  btnMore.textContent = WORDS.btnMore;
-  allItemsTitle.textContent = WORDS.allItems;
+  el.appTitle.textContent = WORDS.appTitle;
+  el.appSubtitle.textContent = WORDS.subtitle;
+  el.q.placeholder = WORDS.placeholderSearch;
+  el.loc.placeholder = WORDS.placeholderLocation;
+  el.cus.placeholder = WORDS.placeholderCustomer;
+  el.btnSearch.textContent = WORDS.btnSearch;
+  el.btnLoc.textContent = WORDS.btnLocation;
+  el.btnCus.textContent = WORDS.btnCustomer;
+  el.btnMore.textContent = WORDS.btnMore;
+  el.allItemsTitle.textContent = WORDS.allItems;
 }
 
-const API_BASE="https://script.google.com/macros/s/AKfycbyh1nb5-K1oI5Sa9qeaVirBfj_ent1OW0j8Mzpvyk_JOFQKWWwyut2A_GWykkTA8fsBvA/exec";
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, m => ({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+}[m]));
 
-const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
-let offset=0, limit=50;
+let offset = 0;
+const limit = 50;
 
 function jsonp(url){
-  return new Promise((resolve,reject)=>{
-    const cb="cb_"+Math.random().toString(36).slice(2);
-    const script=document.createElement("script");
-    window[cb]=(d)=>{delete window[cb];script.remove();resolve(d);}
-    script.src=url+(url.includes("?")?"&":"?")+"callback="+cb;
-    script.onerror=()=>reject();
+  return new Promise((resolve, reject) => {
+    const cb = "cb_" + Math.random().toString(36).slice(2);
+    const script = document.createElement("script");
+    window[cb] = (data) => { delete window[cb]; script.remove(); resolve(data); };
+    script.src = url + (url.includes("?") ? "&" : "?") + "callback=" + cb;
+    script.onerror = () => { delete window[cb]; script.remove(); reject(new Error("JSONP load failed")); };
     document.body.appendChild(script);
   });
 }
 
+function openModal(src){
+  if(!src) return;
+  el.modalImage.src = src;
+  el.layoutModal.style.display = "flex";
+}
+function closeModal(){
+  el.layoutModal.style.display = "none";
+  el.modalImage.src = "";
+}
+el.layoutModal.addEventListener("click", closeModal);
+el.layoutModal.querySelector(".modal-content").addEventListener("click", (e)=>e.stopPropagation());
+
+function showStatus(text){ el.status.textContent = text || ""; }
+function showOut(html){
+  el.out.style.display = "block";
+  el.out.innerHTML = html;
+  el.out.scrollIntoView({behavior:"smooth", block:"start"});
+}
+
 function cardItem(it){
+  const layout = it.layout_image_url || "";
   return `
-    <div class="item" onclick="openModal('${esc(it.layout_image_url||"")}')">
+    <div class="item" data-layout="${esc(layout)}">
       <div class="info">
         <div><span class="tag">${WORDS.labelLocation}</span><span class="k">${esc(it.location_code)}</span></div>
         <div><span class="tag">${WORDS.labelCustomer}</span>${esc(it.customer_code)}</div>
         <div><span class="tag">${WORDS.labelPart}</span>${esc(it.part_name)}</div>
       </div>
-      ${it.layout_image_url?`
+      ${layout ? `
       <div class="thumb">
-        <img src="${esc(it.layout_image_url)}">
-      </div>`:""}
-    </div>`;
+        <img src="${esc(layout)}" alt="layout">
+      </div>` : ``}
+    </div>
+  `;
 }
 
-function openModal(src){
-  if(!src) return;
-  modalImage.src=src;
-  layoutModal.style.display="flex";
+function renderGrid(items){
+  if(!items || !items.length) return `<p class="muted">${WORDS.notFound}</p>`;
+  return `<div class="grid">${items.map(cardItem).join("")}</div>`;
 }
-function closeModal(){
-  layoutModal.style.display="none";
-  modalImage.src="";
-}
+
+document.addEventListener("click", (e) => {
+  if (e.target.closest("a")) return;
+  const item = e.target.closest(".item[data-layout]");
+  if (!item) return;
+  const src = item.getAttribute("data-layout");
+  if (src && src !== "null" && src !== "undefined") openModal(src);
+});
+
+el.btnSearch.onclick = async () => {
+  const q = el.q.value.trim();
+  if(!q) return;
+  showStatus(WORDS.loading);
+  try{
+    const data = await jsonp(`${API_BASE}?action=search&q=${encodeURIComponent(q)}`);
+    if(!data.ok) return showOut(`<p class="muted">❌ ${esc(data.error || "Error")}</p>`);
+    showOut(`<h3 style="margin:0 0 10px 0">ผลการค้นหา: "${esc(data.q)}" (พบ ${data.total} รายการ)</h3>` + renderGrid(data.results));
+  } catch(e){
+    showOut(`<p class="muted">❌ เรียก API ไม่สำเร็จ: ${esc(e.message)}</p>`);
+  } finally {
+    showStatus("");
+  }
+};
+
+el.btnLoc.onclick = async () => {
+  const code = el.loc.value.trim();
+  if(!code) return;
+  showStatus(WORDS.loading);
+  try{
+    const data = await jsonp(`${API_BASE}?action=location&code=${encodeURIComponent(code)}`);
+    if(!data.ok) return showOut(`<p class="muted">❌ ${esc(data.error || "Error")}</p>`);
+    showOut(`<h3 style="margin:0 0 10px 0">${WORDS.labelLocation}: ${esc(data.location_code)} — รวม ${data.count} รายการ</h3>` + renderGrid(data.items));
+  } catch(e){
+    showOut(`<p class="muted">❌ เรียก API ไม่สำเร็จ: ${esc(e.message)}</p>`);
+  } finally {
+    showStatus("");
+  }
+};
+
+el.btnCus.onclick = async () => {
+  const code = el.cus.value.trim();
+  if(!code) return;
+  showStatus(WORDS.loading);
+  try{
+    const data = await jsonp(`${API_BASE}?action=customer&code=${encodeURIComponent(code)}`);
+    if(!data.ok) return showOut(`<p class="muted">❌ ${esc(data.error || "Error")}</p>`);
+    const blocks = (data.locations || []).map(g => `
+      <div class="item" data-layout="${esc(g.meta?.layout_image_url || "")}">
+        <div class="info">
+          <div><span class="tag">${WORDS.labelLocation}</span><span class="k">${esc(g.location_code)}</span> — ${g.count} รายการ</div>
+        </div>
+        ${g.meta?.layout_image_url ? `<div class="thumb"><img src="${esc(g.meta.layout_image_url)}" alt="layout"></div>` : ``}
+      </div>
+    `).join("");
+    showOut(`<h3 style="margin:0 0 10px 0">${WORDS.labelCustomer}: ${esc(data.customer_code)} — รวมทั้งหมด ${data.total} รายการ</h3>
+      <div class="grid">${blocks || `<p class="muted">${WORDS.notFound}</p>`}</div>`);
+  } catch(e){
+    showOut(`<p class="muted">❌ เรียก API ไม่สำเร็จ: ${esc(e.message)}</p>`);
+  } finally {
+    showStatus("");
+  }
+};
 
 async function loadMore(){
-  status.textContent=WORDS.loading;
-  const d=await jsonp(`${API_BASE}?action=list&limit=${limit}&offset=${offset}`);
-  offset+=d.returned;
-  list.insertAdjacentHTML("beforeend",(d.items||[]).map(cardItem).join(""));
-  if(d.returned<limit) btnMore.disabled=true;
-  status.textContent="";
+  showStatus(WORDS.loading);
+  try{
+    const d = await jsonp(`${API_BASE}?action=list&limit=${limit}&offset=${offset}`);
+    if(!d.ok){ showStatus(""); return; }
+    offset += d.returned;
+    el.list.insertAdjacentHTML("beforeend", (d.items || []).map(cardItem).join(""));
+    if(d.returned < limit) el.btnMore.disabled = true;
+  } catch(e){
+    showOut(`<p class="muted">❌ โหลดรายการไม่ได้: ${esc(e.message)}</p>`);
+  } finally {
+    showStatus("");
+  }
 }
 
-btnMore.onclick=loadMore;
+el.btnMore.onclick = loadMore;
+
 applyWords();
 loadMore();
 </script>
