@@ -17,29 +17,31 @@
     button{background:var(--btn);color:#fff;border:none;cursor:pointer}
     button.secondary{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15)}
     .muted{color:var(--mut);font-size:13px;line-height:1.4}
-    /* เดสก์ท็อป/จอใหญ่: ให้ยืดหยุ่น */
+/* เดสก์ท็อป / จอใหญ่: ยืดหยุ่นตามความกว้างจอ */
 .grid{
   display:grid;
   gap:10px;
   grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));
 }
 
-/* มือถือ: บังคับ 2 คอลัมน์ */
+/* มือถือ: 1 ใบต่อแถว (ใหญ่ อ่านง่าย) */
 @media (max-width: 640px){
   .grid{
-    grid-template-columns:repeat(1, minmax(0, 1fr));
+    grid-template-columns: 1fr;
     gap:10px;
   }
-  .item{padding:10px}
-  .tag{font-size:12px}
-  input,button{height:42px;font-size:15px}
-}
 
-  .item{padding:8px}
-  .tag{font-size:11px}
-  input,button{height:40px;font-size:14px}
-}
+  .item{ padding:10px; }
+  .tag{ font-size:12px; }
+  input,button{ height:42px; font-size:15px; }
 
+  /* รูปไม่สูงเกินไป */
+  img{
+    max-height:180px;
+    object-fit:cover;
+  }
+}
+``
     .item{background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.10);border-radius:14px;padding:10px}
     .tag{display:inline-block;padding:2px 8px;border-radius:999px;background:rgba(37,99,235,.18);border:1px solid rgba(37,99,235,.35);margin-right:6px;font-size:12px;color:#c7d2fe}
     .k{font-weight:700}
