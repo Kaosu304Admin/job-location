@@ -27,9 +27,14 @@
 /* มือถือ: บังคับ 2 คอลัมน์ */
 @media (max-width: 640px){
   .grid{
-    grid-template-columns:repeat(2, minmax(0, 1fr));
-    gap:8px;
+    grid-template-columns: 1fr;   /* ✅ มือถือ = 1 ใบต่อแถว */
+    gap:10px;
   }
+  .item{padding:10px}
+  .tag{font-size:12px}
+  input,button{height:42px;font-size:15px}
+}
+
   .item{padding:8px}
   .tag{font-size:11px}
   input,button{height:40px;font-size:14px}
