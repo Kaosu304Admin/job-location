@@ -3,112 +3,204 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Job Location Search</title>
+  <title>Job Location DB</title>
   <style>
-    body{font-family:system-ui,Segoe UI,Arial; margin:16px; max-width:980px}
-    .card{border:1px solid #ddd;border-radius:12px;padding:12px;margin:12px 0}
-    input,button{padding:10px;border-radius:10px;border:1px solid #ccc}
-    button{background:#2563eb;color:#fff;border:none;cursor:pointer}
+    :root{--b:#e5e7eb;--bg:#0b1220;--card:#0f172a;--txt:#e5e7eb;--mut:#94a3b8;--btn:#2563eb}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Arial;background:linear-gradient(180deg,var(--bg),#060914);color:var(--txt)}
+    .wrap{max-width:1100px;margin:0 auto;padding:14px}
+    h1{font-size:18px;margin:8px 0 12px}
+    .card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px;margin:10px 0}
     .row{display:flex;gap:8px;flex-wrap:wrap}
-    .items{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px}
-    .item{border:1px solid #eee;border-radius:12px;padding:10px}
-    img{max-width:100%;border-radius:12px}
-    .muted{color:#666;font-size:13px}
-    .tag{display:inline-block;background:#f3f4f6;padding:2px 8px;border-radius:999px;margin-right:6px}
+    input,button{height:42px;border-radius:12px;border:1px solid rgba(255,255,255,.15);padding:0 12px;font-size:15px}
+    input{flex:1;min-width:220px;background:rgba(0,0,0,.25);color:var(--txt)}
+    button{background:var(--btn);color:#fff;border:none;cursor:pointer}
+    button.secondary{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15)}
+    .muted{color:var(--mut);font-size:13px;line-height:1.4}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px}
+    .item{background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.10);border-radius:14px;padding:10px}
+    .tag{display:inline-block;padding:2px 8px;border-radius:999px;background:rgba(37,99,235,.18);border:1px solid rgba(37,99,235,.35);margin-right:6px;font-size:12px;color:#c7d2fe}
+    .k{font-weight:700}
+    img{width:100%;border-radius:12px;display:block;margin-top:8px}
+    a{color:#93c5fd}
+    .toolbar input{min-width:160px;flex:0 0 200px}
+    @media (max-width:520px){
+      .toolbar input{flex:1;min-width:140px}
+      button{flex:1}
+    }
   </style>
 </head>
 <body>
-  <h2>🔎 ค้นหา Job / Location / Customer</h2>
+<div class="wrap">
+  <h1>📚 Job Location Database</h1>
 
   <div class="card">
     <div class="row">
-      <input id="q" style="flex:1;min-width:260px" placeholder="พิมพ์ Part Name หรือ Location เช่น A1-01 หรือ Customer Code">
-      <button id="btn">ค้นหา</button>
+      <input id="q" placeholder="พิมพ์ Part Name / Location (A1-01) / Customer Code">
+      <button id="btnSearch">ค้นหา</button>
     </div>
-    <div class="muted" style="margin-top:8px">
-      • ค้นหาแบบรวม: Part/Location/Customer • หรือใช้ปุ่มด้านล่างเพื่อดูสรุปเฉพาะ
-    </div>
-    <div class="row" style="margin-top:10px">
-      <input id="loc" placeholder="Location (เช่น A1-01)">
-      <button id="btnLoc">ดู Location</button>
+    <div class="row toolbar" style="margin-top:10px">
+      <input id="loc" placeholder="Location เช่น A1-01">
+      <button class="secondary" id="btnLoc">ดู Location</button>
       <input id="cus" placeholder="Customer Code">
-      <button id="btnCus">ดู Customer</button>
+      <button class="secondary" id="btnCus">ดู Customer</button>
+    </div>
+    <div class="muted" style="margin-top:10px">
+      • ถ้ายังไม่ค้นหา ระบบจะแสดงรายการแบบฐานข้อมูลด้านล่าง<br>
+      • ถ้าปุ่มไม่ทำงาน ให้เช็กว่าใส่ URL API ถูกต้อง
     </div>
   </div>
 
+  <div id="status" class="muted"></div>
   <div id="out" class="card" style="display:none"></div>
 
+  <div class="card">
+    <div class="row" style="align-items:center;justify-content:space-between">
+      <div>
+        <b>รายการทั้งหมด</b> <span class="muted">(โหลดทีละชุด)</span>
+      </div>
+      <button id="btnMore" class="secondary">โหลดเพิ่ม</button>
+    </div>
+    <div id="list" class="grid" style="margin-top:10px"></div>
+  </div>
+</div>
+
 <script>
-const API_BASE = "PUT_YOUR_APPS_SCRIPT_WEBAPP_URL_HERE"; // <-- ใส่ URL ของคุณ
+const API_BASE = "PUT_YOUR_APPS_SCRIPT_WEBAPP_URL_HERE"; // << ใส่ URL Apps Script /exec ของคุณ
 
+const statusEl = document.getElementById("status");
 const out = document.getElementById("out");
-const esc = s => String(s ?? "").replace(/[&<>"']/g,m=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m]));
+const listEl = document.getElementById("list");
 
-async function getJson(url){
-  const r = await fetch(url);
-  return await r.json();
+const esc = s => String(s ?? "").replace(/[&<>"']/g,m=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m]));
+let offset = 0;
+const limit = 50;
+
+// ---- JSONP helper (แก้ CORS) ----
+function jsonp(url){
+  return new Promise((resolve, reject) => {
+    const cb = "cb_" + Math.random().toString(36).slice(2);
+    window[cb] = (data) => {
+      delete window[cb];
+      script.remove();
+      resolve(data);
+    };
+    const script = document.createElement("script");
+    script.src = url + (url.includes("?") ? "&" : "?") + "callback=" + cb;
+    script.onerror = () => {
+      delete window[cb];
+      script.remove();
+      reject(new Error("JSONP load failed"));
+    };
+    document.body.appendChild(script);
+  });
 }
 
-function show(html){
+function showOut(html){
   out.style.display = "block";
   out.innerHTML = html;
+  out.scrollIntoView({behavior:"smooth", block:"start"});
 }
 
-function renderItems(items){
-  if(!items?.length) return "<p>ไม่พบข้อมูล</p>";
+function cardItem(it){
   return `
-    <div class="items">
-      ${items.map(it => `
-        <div class="item">
-          <div><span class="tag">Location</span><b>${esc(it.location_code)}</b></div>
-          <div><span class="tag">Customer</span>${esc(it.customer_code)}</div>
-          <div><span class="tag">Part</span>${esc(it.part_name)}</div>
-          ${it.layout_image_url ? `<div style="margin-top:8px"><img src="${esc(it.layout_image_url)}" alt="layout"></div>` : ""}
-          ${it.map_url ? `<div class="muted" style="margin-top:6px">แผนที่: <a href="${esc(it.map_url)}" target="_blank">เปิด</a></div>` : ""}
-        </div>
-      `).join("")}
+    <div class="item">
+      <div><span class="tag">Location</span><span class="k">${esc(it.location_code)}</span></div>
+      <div><span class="tag">Customer</span>${esc(it.customer_code)}</div>
+      <div><span class="tag">Part</span>${esc(it.part_name)}</div>
+      ${it.layout_image_url ? `<img src="${esc(it.layout_image_url)}" alt="layout">` : ``}
+      ${it.map_url ? `<div class="muted" style="margin-top:6px">แผนที่: <a target="_blank" href="${esc(it.map_url)}">เปิด</a></div>` : ``}
     </div>
   `;
 }
 
-document.getElementById("btn").onclick = async () => {
+function renderGrid(items){
+  if(!items || !items.length) return `<p class="muted">ไม่พบข้อมูล</p>`;
+  return `<div class="grid">${items.map(cardItem).join("")}</div>`;
+}
+
+// ---- Actions ----
+document.getElementById("btnSearch").onclick = async () => {
   const q = document.getElementById("q").value.trim();
   if(!q) return;
-  const data = await getJson(`${API_BASE}?action=search&q=${encodeURIComponent(q)}`);
-  if(!data.ok) return show(`<p style="color:#c00">❌ ${esc(data.error)}</p>`);
-  show(`<h3>ผลค้นหา: "${esc(data.q)}" (พบ ${data.total} รายการ)</h3>` + renderItems(data.results));
+  statusEl.textContent = "กำลังค้นหา...";
+  try{
+    const data = await jsonp(`${API_BASE}?action=search&q=${encodeURIComponent(q)}`);
+    if(!data.ok) return showOut(`<p style="color:#fca5a5">❌ ${esc(data.error)}</p>`);
+    showOut(`<h3>ผลค้นหา "${esc(data.q)}" (พบ ${data.total} รายการ)</h3>` + renderGrid(data.results));
+  }catch(e){
+    showOut(`<p style="color:#fca5a5">❌ เรียก API ไม่ได้: ${esc(e.message)}</p>
+             <p class="muted">ตรวจว่า API_BASE ถูกต้อง และ Apps Script deploy แล้ว</p>`);
+  }finally{
+    statusEl.textContent = "";
+  }
 };
 
 document.getElementById("btnLoc").onclick = async () => {
   const code = document.getElementById("loc").value.trim();
   if(!code) return;
-  const data = await getJson(`${API_BASE}?action=location&code=${encodeURIComponent(code)}`);
-  if(!data.ok) return show(`<p style="color:#c00">❌ ${esc(data.error)}</p>`);
-  show(`
-    <h3>Location: ${esc(data.location_code)} (รวม ${data.count} item)</h3>
-    ${data.meta?.layout_image_url ? `<img src="${esc(data.meta.layout_image_url)}" alt="layout">` : ""}
-    ${data.meta?.map_url ? `<div class="muted">แผนที่: <a href="${esc(data.meta.map_url)}" target="_blank">เปิด</a></div>` : ""}
-    <hr/>
-    ${renderItems(data.items)}
-  `);
+  statusEl.textContent = "กำลังโหลด location...";
+  try{
+    const data = await jsonp(`${API_BASE}?action=location&code=${encodeURIComponent(code)}`);
+    if(!data.ok) return showOut(`<p style="color:#fca5a5">❌ ${esc(data.error)}</p>`);
+    showOut(`
+      <h3>Location ${esc(data.location_code)} — รวม ${data.count} item</h3>
+      ${data.meta?.layout_image_url ? `<img src="${esc(data.meta.layout_image_url)}" alt="layout">` : ``}
+      ${data.meta?.map_url ? `<div class="muted">แผนที่: <a target="_blank" href="${esc(data.meta.map_url)}">เปิด</a></div>` : ``}
+      <hr style="border-color:rgba(255,255,255,.08)"/>
+      ${renderGrid(data.items)}
+    `);
+  }catch(e){
+    showOut(`<p style="color:#fca5a5">❌ เรียก API ไม่ได้: ${esc(e.message)}</p>`);
+  }finally{
+    statusEl.textContent = "";
+  }
 };
 
 document.getElementById("btnCus").onclick = async () => {
   const code = document.getElementById("cus").value.trim();
   if(!code) return;
-  const data = await getJson(`${API_BASE}?action=customer&code=${encodeURIComponent(code)}`);
-  if(!data.ok) return show(`<p style="color:#c00">❌ ${esc(data.error)}</p>`);
-  show(`
-    <h3>Customer: ${esc(data.customer_code)} (รวมทั้งหมด ${data.total} item)</h3>
-    ${data.locations.map(g => `
-      <div class="card">
-        <b>Location ${esc(g.location_code)}</b> — ${g.count} item
-        ${g.meta?.layout_image_url ? `<div style="margin-top:8px"><img src="${esc(g.meta.layout_image_url)}"></div>` : ""}
-        ${g.meta?.map_url ? `<div class="muted">แผนที่: <a href="${esc(g.meta.map_url)}" target="_blank">เปิด</a></div>` : ""}
-      </div>
-    `).join("")}
-  `);
+  statusEl.textContent = "กำลังโหลด customer...";
+  try{
+    const data = await jsonp(`${API_BASE}?action=customer&code=${encodeURIComponent(code)}`);
+    if(!data.ok) return showOut(`<p style="color:#fca5a5">❌ ${esc(data.error)}</p>`);
+    showOut(`
+      <h3>Customer ${esc(data.customer_code)} — รวมทั้งหมด ${data.total} item</h3>
+      ${data.locations.map(g => `
+        <div class="item">
+          <div><span class="tag">Location</span><span class="k">${esc(g.location_code)}</span> — ${g.count} item</div>
+          ${g.meta?.layout_image_url ? `<img src="${esc(g.meta.layout_image_url)}" alt="layout">` : ``}
+          ${g.meta?.map_url ? `<div class="muted">แผนที่: <a target="_blank" href="${esc(g.meta.map_url)}">เปิด</a></div>` : ``}
+        </div>
+      `).join("")}
+    `);
+  }catch(e){
+    showOut(`<p style="color:#fca5a5">❌ เรียก API ไม่ได้: ${esc(e.message)}</p>`);
+  }finally{
+    statusEl.textContent = "";
+  }
 };
+
+// ---- DB list (โหลดเพิ่มไหลลง) ----
+async function loadMore(){
+  statusEl.textContent = "กำลังโหลดรายการ...";
+  try{
+    const data = await jsonp(`${API_BASE}?action=list&limit=${limit}&offset=${offset}`);
+    if(!data.ok) { statusEl.textContent=""; return; }
+    offset += data.returned;
+    listEl.insertAdjacentHTML("beforeend", data.items.map(cardItem).join(""));
+    statusEl.textContent = `แสดงแล้ว ${offset} รายการ (ประมาณทั้งหมด ${data.total_estimate})`;
+    if(data.returned < limit) document.getElementById("btnMore").disabled = true;
+  }catch(e){
+    statusEl.textContent = "";
+    showOut(`<p style="color:#fca5a5">❌ โหลดรายการไม่ได้: ${esc(e.message)}</p>
+             <p class="muted">ตรวจว่า API_BASE ถูกต้อง และ Apps Script deploy แล้ว</p>`);
+  }
+}
+document.getElementById("btnMore").onclick = loadMore;
+
+// โหลดรายการครั้งแรกทันที เหมือนฐานข้อมูล
+loadMore();
 </script>
 </body>
 </html>
