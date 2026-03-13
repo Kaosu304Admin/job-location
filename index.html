@@ -6,34 +6,6 @@
   <title>ระบบระบุตำแหน่งงาน</title>
 
   <style>
-    
-/* ===== Modal ===== */
-.modal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.7);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:9999;
-}
-
-.modal-content{
-  background:#fff;
-  border-radius:14px;
-  padding:10px;
-  max-width:95vw;
-  max-height:95vh;
-}
-
-.modal-content img{
-  width:100%;
-  height:auto;
-  max-height:90vh;
-  object-fit:contain;
-  border-radius:10px;
-}
-
     :root{
       /* ===== สีบริษัท ===== */
       --brand-red:#c1121f;
@@ -68,7 +40,7 @@
       width:40px;
       height:40px;
       border-radius:10px;
-      background:#ffffff;
+      background:#fff;
       border:1px solid var(--border);
       display:flex;
       align-items:center;
@@ -82,7 +54,7 @@
       object-fit:contain;
       display:block;
       margin:auto;
-      transform: translateY(-1px); /* ชดเชยสายตาเล็กน้อย ลบได้ถ้าไม่ต้องการ */
+      transform:translateY(-1px);
     }
     h1{font-size:18px;margin:0}
     .subtitle{font-size:13px;color:var(--muted)}
@@ -109,10 +81,6 @@
       border:1px solid var(--border);
       outline:none;
     }
-    input:focus{
-      border-color: rgba(29,78,216,.5);
-      box-shadow: 0 0 0 3px rgba(29,78,216,.12);
-    }
 
     /* ===== Buttons ===== */
     button{
@@ -120,7 +88,6 @@
       color:#fff;
       border:none;
       cursor:pointer;
-      transition: .15s ease;
     }
     button:hover{background:var(--brand-red-dark)}
     button.secondary{
@@ -128,13 +95,7 @@
       color:var(--brand-blue);
       border:1px solid #c7d2fe;
     }
-    button.secondary:hover{
-      background:#e0e7ff;
-    }
-    button:disabled{
-      opacity:.55;
-      cursor:not-allowed;
-    }
+    button:disabled{opacity:.5;cursor:not-allowed}
 
     .muted{font-size:13px;color:var(--muted);line-height:1.4}
 
@@ -145,12 +106,31 @@
       grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));
     }
 
-    /* ===== Item Card ===== */
+    /* ===== STEP 3: Card แนวนอน ===== */
     .item{
       border:1px solid var(--border);
       border-radius:14px;
       padding:12px;
       background:#fff;
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      cursor:pointer;
+    }
+    .item:hover{background:#fafafa}
+
+    .item .info{flex:1}
+
+    .item .thumb{
+      width:120px;
+      min-width:120px;
+    }
+    .item .thumb img{
+      width:100%;
+      max-height:90px;
+      object-fit:cover;
+      border-radius:10px;
+      margin:0;
     }
 
     .tag{
@@ -163,341 +143,177 @@
       font-size:12px;
       margin-right:6px;
     }
-
     .k{font-weight:600}
-    img{width:100%;border-radius:12px;margin-top:8px;display:block}
-    a{color:var(--brand-blue);text-decoration:none}
-    a:hover{text-decoration:underline}
 
     /* ===== Mobile ===== */
     @media (max-width:640px){
       .grid{grid-template-columns:1fr}
-      img{max-height:180px;object-fit:cover}
+      .item{align-items:center}
+      .item .thumb{width:90px;min-width:90px}
       button{flex:1}
-      .logo-box{width:38px;height:38px}
     }
-    
-/* ===== STEP 3: Card แนวนอน ===== */
-.item{
-  display:flex;
-  gap:12px;
-  align-items:flex-start;
-}
 
-.item .info{
-  flex:1;
-}
-
-.item .thumb{
-  width:120px;
-  min-width:120px;
-}
-
-.item .thumb img{
-  width:100%;
-  height:100%;
-  max-height:90px;
-  object-fit:cover;
-  border-radius:10px;
-  margin:0;
-  cursor:pointer;
-}
-
-/* มือถือ: ยังเป็นแนวนอน แต่รูปเล็กลง */
-@media (max-width:640px){
-  .item{
-    align-items:center;
-  }
-  .item .thumb{
-    width:90px;
-    min-width:90px;
-  }
-}
-
-function openModal(src){
-  if(!src) return;
-  const modal = document.getElementById("layoutModal");
-  const img = document.getElementById("modalImage");
-  img.src = src;
-  modal.style.display = "flex";
-}
-
-function closeModal(){
-  const modal = document.getElementById("layoutModal");
-  modal.style.display = "none";
-  document.getElementById("modalImage").src = "";
-}
-
+    /* ===== STEP 3: Modal ===== */
+    .modal{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.7);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:9999;
+    }
+    .modal-content{
+      background:#fff;
+      border-radius:14px;
+      padding:10px;
+      max-width:95vw;
+      max-height:95vh;
+    }
+    .modal-content img{
+      width:100%;
+      max-height:90vh;
+      object-fit:contain;
+      border-radius:10px;
+    }
   </style>
 </head>
 
 <body>
-  <div class="wrap">
+<div class="wrap">
 
-    <!-- ===== Header ===== -->
-    <div class="header">
-      <div class="logo-box">
-        <img src="assets/logo.png" alt="Company Logo">
-      </div>
-      <div>
-        <h1 id="appTitle">ระบบระบุตำแหน่งงาน</h1>
-        <div class="subtitle" id="appSubtitle">ค้นหาตำแหน่งจัดเก็บ • ชื่องาน • ลูกค้า</div>
-      </div>
+  <!-- ===== Header ===== -->
+  <div class="header">
+    <div class="logo-box">
+      <img src="assets/logo.png" alt="Company Logo">
     </div>
-
-    <!-- ===== Search ===== -->
-    <div class="card">
-      <div class="row">
-        <input id="q" placeholder="ค้นหาชื่องาน / ตำแหน่งจัดเก็บ / ลูกค้า">
-        <button id="btnSearch">ค้นหา</button>
-      </div>
-
-      <div class="row" style="margin-top:10px">
-        <input id="loc" placeholder="ตำแหน่งจัดเก็บ (เช่น A1-01)">
-        <button class="secondary" id="btnLoc">ดูตำแหน่งจัดเก็บ</button>
-
-        <input id="cus" placeholder="รหัสลูกค้า">
-        <button class="secondary" id="btnCus">ดูลูกค้า</button>
-      </div>
-
-      <div class="muted" style="margin-top:10px">
-        • หากยังไม่ค้นหา ระบบจะแสดงรายการฐานข้อมูลด้านล่าง<br>
-        • สามารถค้นหาได้ทั้ง “ชื่องาน / ตำแหน่งจัดเก็บ / ลูกค้า”
-      </div>
+    <div>
+      <h1 id="appTitle"></h1>
+      <div class="subtitle" id="appSubtitle"></div>
     </div>
-
-    <div id="status" class="muted"></div>
-    <div id="out" class="card" style="display:none"></div>
-
-    <!-- ===== List ===== -->
-    <div class="card">
-      <div class="row" style="justify-content:space-between;align-items:center">
-        <b id="allItemsTitle">รายการทั้งหมด</b>
-        <button id="btnMore" class="secondary">แสดงเพิ่มเติม</button>
-      </div>
-      <div id="list" class="grid" style="margin-top:10px"></div>
-    </div>
-
   </div>
 
+  <!-- ===== Search ===== -->
+  <div class="card">
+    <div class="row">
+      <input id="q">
+      <button id="btnSearch"></button>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <input id="loc">
+      <button class="secondary" id="btnLoc"></button>
+      <input id="cus">
+      <button class="secondary" id="btnCus"></button>
+    </div>
+  </div>
+
+  <div id="status" class="muted"></div>
+  <div id="out" class="card" style="display:none"></div>
+
+  <!-- ===== List ===== -->
+  <div class="card">
+    <div class="row" style="justify-content:space-between;align-items:center">
+      <b id="allItemsTitle"></b>
+      <button id="btnMore" class="secondary"></button>
+    </div>
+    <div id="list" class="grid" style="margin-top:10px"></div>
+  </div>
+
+</div>
+
+<!-- ===== Modal ===== -->
+<div id="layoutModal" class="modal" onclick="closeModal()">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <img id="modalImage" src="">
+  </div>
+</div>
+
 <script>
-/* ===== STEP 2: Dictionary คำศัพท์ (แก้ครั้งเดียวทั้งเว็บ) ===== */
+/* ===== STEP 2: WORDS ===== */
 const WORDS = {
-  appTitle: "ระบบระบุตำแหน่งงาน",
-  subtitle: "ค้นหาตำแหน่งจัดเก็บ • ชื่องาน • ลูกค้า",
-
-  placeholderSearch: "ค้นหาชื่องาน / ตำแหน่งจัดเก็บ / ลูกค้า",
-  placeholderLocation: "ตำแหน่งจัดเก็บ (เช่น A1-01)",
-  placeholderCustomer: "รหัสลูกค้า",
-
-  btnSearch: "ค้นหา",
-  btnLocation: "ดูตำแหน่งจัดเก็บ",
-  btnCustomer: "ดูลูกค้า",
-  btnMore: "แสดงเพิ่มเติม",
-
-  labelLocation: "ตำแหน่งจัดเก็บ",
-  labelCustomer: "ลูกค้า",
-  labelPart: "ชื่องาน",
-
-  openMap: "เปิดแผนที่",
-  allItems: "รายการทั้งหมด",
-  loading: "กำลังโหลดข้อมูล...",
-  notFound: "ไม่พบข้อมูล"
+  appTitle:"ระบบระบุตำแหน่งงาน",
+  subtitle:"ค้นหาตำแหน่งจัดเก็บ • ชื่องาน • ลูกค้า",
+  placeholderSearch:"ค้นหาชื่องาน / ตำแหน่งจัดเก็บ / ลูกค้า",
+  placeholderLocation:"ตำแหน่งจัดเก็บ (เช่น A1-01)",
+  placeholderCustomer:"รหัสลูกค้า",
+  btnSearch:"ค้นหา",
+  btnLocation:"ดูตำแหน่งจัดเก็บ",
+  btnCustomer:"ดูลูกค้า",
+  btnMore:"แสดงเพิ่มเติม",
+  labelLocation:"ตำแหน่งจัดเก็บ",
+  labelCustomer:"ลูกค้า",
+  labelPart:"ชื่องาน",
+  allItems:"รายการทั้งหมด",
+  loading:"กำลังโหลดข้อมูล...",
+  notFound:"ไม่พบข้อมูล"
 };
 
 function applyWords(){
-  document.getElementById("appTitle").textContent = WORDS.appTitle;
-  document.getElementById("appSubtitle").textContent = WORDS.subtitle;
-
-  document.getElementById("q").placeholder   = WORDS.placeholderSearch;
-  document.getElementById("loc").placeholder = WORDS.placeholderLocation;
-  document.getElementById("cus").placeholder = WORDS.placeholderCustomer;
-
-  document.getElementById("btnSearch").textContent = WORDS.btnSearch;
-  document.getElementById("btnLoc").textContent    = WORDS.btnLocation;
-  document.getElementById("btnCus").textContent    = WORDS.btnCustomer;
-  document.getElementById("btnMore").textContent   = WORDS.btnMore;
-
-  document.getElementById("allItemsTitle").textContent = WORDS.allItems;
+  appTitle.textContent = WORDS.appTitle;
+  appSubtitle.textContent = WORDS.subtitle;
+  q.placeholder = WORDS.placeholderSearch;
+  loc.placeholder = WORDS.placeholderLocation;
+  cus.placeholder = WORDS.placeholderCustomer;
+  btnSearch.textContent = WORDS.btnSearch;
+  btnLoc.textContent = WORDS.btnLocation;
+  btnCus.textContent = WORDS.btnCustomer;
+  btnMore.textContent = WORDS.btnMore;
+  allItemsTitle.textContent = WORDS.allItems;
 }
 
-/* ===== CONFIG: ใส่ URL Apps Script ของคุณ ===== */
-const API_BASE = "https://script.google.com/macros/s/AKfycbyh1nb5-K1oI5Sa9qeaVirBfj_ent1OW0j8Mzpvyk_JOFQKWWwyut2A_GWykkTA8fsBvA/exec";
+const API_BASE="https://script.google.com/macros/s/AKfycbyh1nb5-K1oI5Sa9qeaVirBfj_ent1OW0j8Mzpvyk_JOFQKWWwyut2A_GWykkTA8fsBvA/exec";
 
-const statusEl = document.getElementById("status");
-const out      = document.getElementById("out");
-const listEl   = document.getElementById("list");
+const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+let offset=0, limit=50;
 
-const esc = (s) => String(s ?? "").replace(/[&<>"']/g, m => ({
-  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-}[m]));
-
-let offset = 0;
-const limit = 50;
-
-/* ===== JSONP helper (แก้ CORS) ===== */
 function jsonp(url){
-  return new Promise((resolve, reject) => {
-    const cb = "cb_" + Math.random().toString(36).slice(2);
-    const script = document.createElement("script");
-
-    window[cb] = (data) => {
-      delete window[cb];
-      script.remove();
-      resolve(data);
-    };
-
-    script.src = url + (url.includes("?") ? "&" : "?") + "callback=" + cb;
-    script.onerror = () => {
-      delete window[cb];
-      script.remove();
-      reject(new Error("JSONP load failed"));
-    };
-
+  return new Promise((resolve,reject)=>{
+    const cb="cb_"+Math.random().toString(36).slice(2);
+    const script=document.createElement("script");
+    window[cb]=(d)=>{delete window[cb];script.remove();resolve(d);}
+    script.src=url+(url.includes("?")?"&":"?")+"callback="+cb;
+    script.onerror=()=>reject();
     document.body.appendChild(script);
   });
 }
 
-/* ===== UI helper ===== */
-function showStatus(text){ statusEl.textContent = text || ""; }
-function showOut(html){
-  out.style.display = "block";
-  out.innerHTML = html;
-  out.scrollIntoView({behavior:"smooth", block:"start"});
-}
-
 function cardItem(it){
   return `
-    <div class="item" onclick="openModal('${esc(it.layout_image_url || "")}')">
+    <div class="item" onclick="openModal('${esc(it.layout_image_url||"")}')">
       <div class="info">
         <div><span class="tag">${WORDS.labelLocation}</span><span class="k">${esc(it.location_code)}</span></div>
         <div><span class="tag">${WORDS.labelCustomer}</span>${esc(it.customer_code)}</div>
         <div><span class="tag">${WORDS.labelPart}</span>${esc(it.part_name)}</div>
       </div>
-
-      ${it.layout_image_url ? `
+      ${it.layout_image_url?`
       <div class="thumb">
-        <img src="${esc(it.layout_image_url)}" alt="layout">
-      </div>
-      ` : ``}
-    </div>
-  `;
+        <img src="${esc(it.layout_image_url)}">
+      </div>`:""}
+    </div>`;
 }
 
-function renderGrid(items){
-  if(!items || !items.length) return `<p class="muted">${WORDS.notFound}</p>`;
-  return `<div class="grid">${items.map(cardItem).join("")}</div>`;
+function openModal(src){
+  if(!src) return;
+  modalImage.src=src;
+  layoutModal.style.display="flex";
+}
+function closeModal(){
+  layoutModal.style.display="none";
+  modalImage.src="";
 }
 
-/* ===== Actions: Search / Location / Customer ===== */
-document.getElementById("btnSearch").onclick = async () => {
-  const q = document.getElementById("q").value.trim();
-  if(!q) return;
-  showStatus(WORDS.loading);
-
-  try{
-    const data = await jsonp(`${API_BASE}?action=search&q=${encodeURIComponent(q)}`);
-    if(!data.ok){
-      return showOut(`<p class="muted">❌ ${esc(data.error || "Error")}</p>`);
-    }
-    showOut(`<h3 style="margin:0 0 10px 0">ผลการค้นหา: "${esc(data.q)}" (พบ ${data.total} รายการ)</h3>` + renderGrid(data.results));
-  } catch(e){
-    showOut(`<p class="muted">❌ เรียก API ไม่สำเร็จ: ${esc(e.message)}</p>`);
-  } finally {
-    showStatus("");
-  }
-};
-
-document.getElementById("btnLoc").onclick = async () => {
-  const code = document.getElementById("loc").value.trim();
-  if(!code) return;
-  showStatus(WORDS.loading);
-
-  try{
-    const data = await jsonp(`${API_BASE}?action=location&code=${encodeURIComponent(code)}`);
-    if(!data.ok){
-      return showOut(`<p class="muted">❌ ${esc(data.error || "Error")}</p>`);
-    }
-    showOut(`
-      <h3 style="margin:0 0 10px 0">${WORDS.labelLocation}: ${esc(data.location_code)} — รวม ${data.count} รายการ</h3>
-      ${data.meta?.layout_image_url ? `<img src="${esc(data.meta.layout_image_url)}" alt="layout">` : ``}
-      ${data.meta?.map_url ? `<div class="muted" style="margin-top:6px">${WORDS.openMap}: <a target="_blank" href="${esc(data.meta.map_url)}">เปิด</a></div>` : ``}
-      <hr style="border:none;border-top:1px solid var(--border);margin:12px 0">
-      ${renderGrid(data.items)}
-    `);
-  } catch(e){
-    showOut(`<p class="muted">❌ เรียก API ไม่สำเร็จ: ${esc(e.message)}</p>`);
-  } finally {
-    showStatus("");
-  }
-};
-
-document.getElementById("btnCus").onclick = async () => {
-  const code = document.getElementById("cus").value.trim();
-  if(!code) return;
-  showStatus(WORDS.loading);
-
-  try{
-    const data = await jsonp(`${API_BASE}?action=customer&code=${encodeURIComponent(code)}`);
-    if(!data.ok){
-      return showOut(`<p class="muted">❌ ${esc(data.error || "Error")}</p>`);
-    }
-
-    const blocks = (data.locations || []).map(g => `
-      <div class="item">
-        <div><span class="tag">${WORDS.labelLocation}</span><span class="k">${esc(g.location_code)}</span> — ${g.count} รายการ</div>
-        ${g.meta?.layout_image_url ? `<img src="${esc(g.meta.layout_image_url)}" alt="layout">` : ``}
-        ${g.meta?.map_url ? `<div class="muted" style="margin-top:6px">${WORDS.openMap}: <a target="_blank" href="${esc(g.meta.map_url)}">เปิด</a></div>` : ``}
-      </div>
-    `).join("");
-
-    showOut(`
-      <h3 style="margin:0 0 10px 0">${WORDS.labelCustomer}: ${esc(data.customer_code)} — รวมทั้งหมด ${data.total} รายการ</h3>
-      <div class="grid">${blocks || `<p class="muted">${WORDS.notFound}</p>`}</div>
-    `);
-
-  } catch(e){
-    showOut(`<p class="muted">❌ เรียก API ไม่สำเร็จ: ${esc(e.message)}</p>`);
-  } finally {
-    showStatus("");
-  }
-};
-
-/* ===== DB list: โหลดรายการทั้งหมดแบบไหลลง ===== */
 async function loadMore(){
-  showStatus(WORDS.loading);
-  try{
-    const d = await jsonp(`${API_BASE}?action=list&limit=${limit}&offset=${offset}`);
-    if(!d.ok){
-      showStatus("");
-      return;
-    }
-    offset += d.returned;
-    listEl.insertAdjacentHTML("beforeend", (d.items || []).map(cardItem).join(""));
-
-    if(d.returned < limit){
-      document.getElementById("btnMore").disabled = true;
-    }
-  } catch(e){
-    showOut(`<p class="muted">❌ โหลดรายการไม่ได้: ${esc(e.message)}</p>`);
-  } finally {
-    showStatus("");
-  }
+  status.textContent=WORDS.loading;
+  const d=await jsonp(`${API_BASE}?action=list&limit=${limit}&offset=${offset}`);
+  offset+=d.returned;
+  list.insertAdjacentHTML("beforeend",(d.items||[]).map(cardItem).join(""));
+  if(d.returned<limit) btnMore.disabled=true;
+  status.textContent="";
 }
 
-document.getElementById("btnMore").onclick = loadMore;
-
-/* ===== Start ===== */
+btnMore.onclick=loadMore;
 applyWords();
 loadMore();
 </script>
-  
-<!-- ===== STEP 3: Modal ดูผัง ===== -->
-<div id="layoutModal" class="modal" onclick="closeModal()">
-  <div class="modal-content" onclick="event.stopPropagation()">
-    <img id="modalImage" src="" alt="layout">
-  </div>
-</div>
-
 </body>
 </html>
