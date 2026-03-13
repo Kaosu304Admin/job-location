@@ -2,51 +2,82 @@
 <html lang="th">
 <head>
   <meta charset="utf-8" />
-  <meta name="max-width + grid auto-fit" content="width=device-width,initial-scale=1" />
+  ✅ <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Job Location DB</title>
+
   <style>
-    :root{--b:#e5e7eb;--bg:#0b1220;--card:#0f172a;--txt:#e5e7eb;--mut:#94a3b8;--btn:#2563eb}
+    :root{
+      --bg:#0b1220;--txt:#e5e7eb;--mut:#94a3b8;--btn:#2563eb
+    }
     *{box-sizing:border-box}
-    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Arial;background:linear-gradient(180deg,var(--bg),#060914);color:var(--txt)}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Arial;
+      background:linear-gradient(180deg,var(--bg),#060914);
+      color:var(--txt)
+    }
     .wrap{max-width:1100px;margin:0 auto;padding:14px}
     h1{font-size:18px;margin:8px 0 12px}
-    .card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px;margin:10px 0}
+    .card{
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:14px;
+      padding:12px;
+      margin:10px 0
+    }
     .row{display:flex;gap:8px;flex-wrap:wrap}
-    input,button{height:42px;border-radius:12px;border:1px solid rgba(255,255,255,.15);padding:0 12px;font-size:15px}
-    input{flex:1;min-width:220px;background:rgba(0,0,0,.25);color:var(--txt)}
+    input,button{
+      height:42px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.15);
+      padding:0 12px;
+      font-size:15px
+    }
+    input{
+      flex:1;
+      min-width:220px;
+      background:rgba(0,0,0,.25);
+      color:var(--txt)
+    }
     button{background:var(--btn);color:#fff;border:none;cursor:pointer}
     button.secondary{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15)}
     .muted{color:var(--mut);font-size:13px;line-height:1.4}
-/* เดสก์ท็อป / จอใหญ่: ยืดหยุ่นตามความกว้างจอ */
-.grid{
-  display:grid;
-  gap:10px;
-  grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));
-}
 
-/* มือถือ: 1 ใบต่อแถว (ใหญ่ อ่านง่าย) */
-@media (max-width: 640px){
-  .grid{
-    grid-template-columns: 1fr;
-    gap:10px;
-  }
+    /* ===== GRID ===== */
+    .grid{
+      display:grid;
+      gap:10px;
+      grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));
+    }
 
-  .item{ padding:10px; }
-  .tag{ font-size:12px; }
-  input,button{ height:42px; font-size:15px; }
-
-  /* รูปไม่สูงเกินไป */
-  img{
-    max-height:180px;
-    object-fit:cover;
-  }
-}
-``
-    .item{background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.10);border-radius:14px;padding:10px}
-    .tag{display:inline-block;padding:2px 8px;border-radius:999px;background:rgba(37,99,235,.18);border:1px solid rgba(37,99,235,.35);margin-right:6px;font-size:12px;color:#c7d2fe}
+    /* ===== ITEM ===== */
+    .item{
+      background:rgba(0,0,0,.22);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:14px;
+      padding:10px
+    }
+    .tag{
+      display:inline-block;
+      padding:2px 8px;
+      border-radius:999px;
+      background:rgba(37,99,235,.18);
+      border:1px solid rgba(37,99,235,.35);
+      margin-right:6px;
+      font-size:12px;
+      color:#c7d2fe
+    }
     .k{font-weight:700}
     img{width:100%;border-radius:12px;display:block;margin-top:8px}
     a{color:#93c5fd}
+
+    /* ===== MOBILE: 1 ใบต่อแถว ===== */
+    @media (max-width: 640px){
+      .grid{ grid-template-columns:1fr; }
+      img{ max-height:180px; object-fit:cover }
+    }
+
+    /* toolbar */
     .toolbar input{min-width:160px;flex:0 0 200px}
     @media (max-width:520px){
       .toolbar input{flex:1;min-width:140px}
@@ -54,6 +85,7 @@
     }
   </style>
 </head>
+
 <body>
 <div class="wrap">
   <h1>📚 Job Location Database</h1>
