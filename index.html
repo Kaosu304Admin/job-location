@@ -1,1 +1,114 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Job Location Search</title>
+  <style>
+    body{font-family:system-ui,Segoe UI,Arial; margin:16px; max-width:980px}
+    .card{border:1px solid #ddd;border-radius:12px;padding:12px;margin:12px 0}
+    input,button{padding:10px;border-radius:10px;border:1px solid #ccc}
+    button{background:#2563eb;color:#fff;border:none;cursor:pointer}
+    .row{display:flex;gap:8px;flex-wrap:wrap}
+    .items{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px}
+    .item{border:1px solid #eee;border-radius:12px;padding:10px}
+    img{max-width:100%;border-radius:12px}
+    .muted{color:#666;font-size:13px}
+    .tag{display:inline-block;background:#f3f4f6;padding:2px 8px;border-radius:999px;margin-right:6px}
+  </style>
+</head>
+<body>
+  <h2>🔎 ค้นหา Job / Location / Customer</h2>
 
+  <div class="card">
+    <div class="row">
+      <input id="q" style="flex:1;min-width:260px" placeholder="พิมพ์ Part Name หรือ Location เช่น A1-01 หรือ Customer Code">
+      <button id="btn">ค้นหา</button>
+    </div>
+    <div class="muted" style="margin-top:8px">
+      • ค้นหาแบบรวม: Part/Location/Customer • หรือใช้ปุ่มด้านล่างเพื่อดูสรุปเฉพาะ
+    </div>
+    <div class="row" style="margin-top:10px">
+      <input id="loc" placeholder="Location (เช่น A1-01)">
+      <button id="btnLoc">ดู Location</button>
+      <input id="cus" placeholder="Customer Code">
+      <button id="btnCus">ดู Customer</button>
+    </div>
+  </div>
+
+  <div id="out" class="card" style="display:none"></div>
+
+<script>
+const API_BASE = "PUT_YOUR_APPS_SCRIPT_WEBAPP_URL_HERE"; // <-- ใส่ URL ของคุณ
+
+const out = document.getElementById("out");
+const esc = s => String(s ?? "").replace(/[&<>"']/g,m=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m]));
+
+async function getJson(url){
+  const r = await fetch(url);
+  return await r.json();
+}
+
+function show(html){
+  out.style.display = "block";
+  out.innerHTML = html;
+}
+
+function renderItems(items){
+  if(!items?.length) return "<p>ไม่พบข้อมูล</p>";
+  return `
+    <div class="items">
+      ${items.map(it => `
+        <div class="item">
+          <div><span class="tag">Location</span><b>${esc(it.location_code)}</b></div>
+          <div><span class="tag">Customer</span>${esc(it.customer_code)}</div>
+          <div><span class="tag">Part</span>${esc(it.part_name)}</div>
+          ${it.layout_image_url ? `<div style="margin-top:8px"><img src="${esc(it.layout_image_url)}" alt="layout"></div>` : ""}
+          ${it.map_url ? `<div class="muted" style="margin-top:6px">แผนที่: <a href="${esc(it.map_url)}" target="_blank">เปิด</a></div>` : ""}
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+document.getElementById("btn").onclick = async () => {
+  const q = document.getElementById("q").value.trim();
+  if(!q) return;
+  const data = await getJson(`${API_BASE}?action=search&q=${encodeURIComponent(q)}`);
+  if(!data.ok) return show(`<p style="color:#c00">❌ ${esc(data.error)}</p>`);
+  show(`<h3>ผลค้นหา: "${esc(data.q)}" (พบ ${data.total} รายการ)</h3>` + renderItems(data.results));
+};
+
+document.getElementById("btnLoc").onclick = async () => {
+  const code = document.getElementById("loc").value.trim();
+  if(!code) return;
+  const data = await getJson(`${API_BASE}?action=location&code=${encodeURIComponent(code)}`);
+  if(!data.ok) return show(`<p style="color:#c00">❌ ${esc(data.error)}</p>`);
+  show(`
+    <h3>Location: ${esc(data.location_code)} (รวม ${data.count} item)</h3>
+    ${data.meta?.layout_image_url ? `<img src="${esc(data.meta.layout_image_url)}" alt="layout">` : ""}
+    ${data.meta?.map_url ? `<div class="muted">แผนที่: <a href="${esc(data.meta.map_url)}" target="_blank">เปิด</a></div>` : ""}
+    <hr/>
+    ${renderItems(data.items)}
+  `);
+};
+
+document.getElementById("btnCus").onclick = async () => {
+  const code = document.getElementById("cus").value.trim();
+  if(!code) return;
+  const data = await getJson(`${API_BASE}?action=customer&code=${encodeURIComponent(code)}`);
+  if(!data.ok) return show(`<p style="color:#c00">❌ ${esc(data.error)}</p>`);
+  show(`
+    <h3>Customer: ${esc(data.customer_code)} (รวมทั้งหมด ${data.total} item)</h3>
+    ${data.locations.map(g => `
+      <div class="card">
+        <b>Location ${esc(g.location_code)}</b> — ${g.count} item
+        ${g.meta?.layout_image_url ? `<div style="margin-top:8px"><img src="${esc(g.meta.layout_image_url)}"></div>` : ""}
+        ${g.meta?.map_url ? `<div class="muted">แผนที่: <a href="${esc(g.meta.map_url)}" target="_blank">เปิด</a></div>` : ""}
+      </div>
+    `).join("")}
+  `);
+};
+</script>
+</body>
+</html>
