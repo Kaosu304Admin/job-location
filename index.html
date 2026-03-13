@@ -38,23 +38,24 @@
       gap:12px;
       margin-bottom:12px;
     }
-    .logo-box{
-      transform: translateY(-1px);
-      width:40px;
-      height:40px;
-      border-radius:10px;
-      background:#fff;
-      border:1px solid var(--border);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-    }
- .logo-box img{
+  .logo-box{
+  width:40px;
+  height:40px;
+  border-radius:10px;
+  background:#ffffff;
+  border:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.logo-box img{
   max-width:100%;
   max-height:100%;
   object-fit:contain;
   display:block;
   margin:auto;
+  transform: translateY(-1px); /* ปรับสายตา ถ้าไม่ต้องการ ลบบรรทัดนี้ได้ */
 }
     h1{font-size:18px;margin:0}
     .subtitle{font-size:13px;color:var(--muted)}
