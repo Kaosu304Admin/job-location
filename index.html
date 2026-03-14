@@ -394,7 +394,7 @@ function reloadData(){loadList()}
 
 async function loadList(){
   showLoading();
-  const r=await jsonp(API_BASE+"?action=list");
+  const r=await jsonp(API_BASE+"?action=list&limit=2000");
   ALL_ITEMS=r.items||[];
   updateSummary(ALL_ITEMS);
   setFilter("all");
@@ -406,7 +406,7 @@ async function doSearch(){
   showLoading();
   const r=q
     ? await jsonp(API_BASE+"?action=search&q="+encodeURIComponent(q))
-    : await jsonp(API_BASE+"?action=list");
+    : await jsonp(API_BASE+"?action=list&limit=2000");
   ALL_ITEMS=r.items||r.results||[];
   updateSummary(ALL_ITEMS);
   setFilter("all");
