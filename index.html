@@ -3,85 +3,194 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ค้นหาตำแหน่งงาน</title>
+<title>ระบบค้นหาตำแหน่งงาน</title>
 
 <style>
 :root{
-  --red:#c1121f;
+  --brand:#c1121f;
+  --brand-dark:#9b0f18;
   --blue:#1d4ed8;
   --green:#16a34a;
-  --gray:#6b7280;
+  --red:#dc2626;
   --bg:#f8fafc;
   --border:#e5e7eb;
+  --text:#111827;
+  --muted:#6b7280;
 }
 
 *{box-sizing:border-box}
-body{margin:0;font-family:system-ui;background:var(--bg)}
-.wrap{max-width:1100px;margin:auto;padding:14px}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,Segoe UI,Arial;
+  background:var(--bg);
+  color:var(--text);
+}
+.wrap{max-width:1200px;margin:auto;padding:16px}
 
-/* ---------- Header / Search ---------- */
+/* ===== HEADER ===== */
 .header{
-  background:#fff;border-radius:16px;padding:14px;
-  box-shadow:0 8px 24px rgba(0,0,0,.08);margin-bottom:14px
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:14px;
+}
+.logo{
+  width:42px;height:42px;
+  border-radius:10px;
+  background:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 6px 18px rgba(0,0,0,.12);
+}
+.logo img{
+  max-width:80%;
+  max-height:80%;
+}
+.title{
+  font-size:20px;
+  font-weight:800;
+}
+
+/* ===== SEARCH ===== */
+.search-card{
+  background:#fff;
+  border-radius:18px;
+  padding:14px;
+  margin-bottom:16px;
+  box-shadow:0 10px 30px rgba(0,0,0,.08);
 }
 .row{display:flex;gap:8px;flex-wrap:wrap}
-input,button{height:44px;border-radius:12px;padding:0 12px;font-size:15px}
-input{flex:1;border:1px solid var(--border)}
-button.primary{background:var(--red);color:#fff;border:none}
-button.secondary{background:#eef2ff;color:var(--blue);border:none}
-
-/* ---------- Grid ---------- */
-.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(360px,1fr))}
-
-/* ---------- Card ---------- */
-.item{
-  background:#fff;border:1px solid var(--border);border-radius:18px;
-  overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,.06)
+input,button{
+  height:46px;
+  border-radius:12px;
+  padding:0 14px;
+  font-size:15px;
 }
-.item-body{display:flex;gap:12px;padding:14px}
-.info{flex:1}
+input{
+  flex:1;
+  border:1px solid var(--border);
+}
+button.primary{
+  background:var(--brand);
+  color:#fff;
+  border:none;
+}
+button.primary:hover{background:var(--brand-dark)}
+button.secondary{
+  background:#eef2ff;
+  color:var(--blue);
+  border:none;
+}
 
-/* badges */
+/* ===== GRID ===== */
+.grid{
+  display:grid;
+  gap:18px;
+  grid-template-columns:repeat(auto-fit,minmax(360px,1fr));
+}
+
+/* ===== CARD ===== */
+.item{
+  background:#fff;
+  border-radius:20px;
+  border:1px solid var(--border);
+  overflow:hidden;
+  transition:
+    transform .25s ease,
+    box-shadow .25s ease;
+  cursor:pointer;
+}
+.item:hover{
+  transform:translateY(-6px);
+  box-shadow:0 22px 55px rgba(0,0,0,.18);
+}
+.item.active{
+  box-shadow:0 26px 65px rgba(193,18,31,.35);
+  border-color:var(--brand);
+}
+
+.item-body{
+  display:flex;
+  gap:14px;
+  padding:16px;
+}
+
+/* ===== INFO ===== */
+.info{flex:1}
 .badge{
-  display:inline-block;padding:2px 10px;border-radius:999px;
-  font-size:12px;margin-right:6px;background:#eef2ff;color:var(--blue)
+  display:inline-block;
+  padding:3px 12px;
+  border-radius:999px;
+  font-size:12px;
+  margin-right:6px;
+  background:#eef2ff;
+  color:var(--blue);
 }
 .badge.ok{background:#dcfce7;color:var(--green)}
 .badge.warn{background:#fee2e2;color:var(--red)}
 
-.field{margin:4px 0;font-size:14px}
+.field{margin:6px 0}
 .missing{color:var(--red);font-weight:600}
 
-/* layout */
-.layout{width:170px}
+/* ===== LAYOUT ===== */
+.layout{
+  width:180px;
+}
 .layout img{
-  width:100%;height:140px;object-fit:cover;border-radius:12px;cursor:pointer
+  width:100%;
+  height:150px;
+  object-fit:cover;
+  border-radius:14px;
+  box-shadow:0 10px 24px rgba(0,0,0,.12);
 }
 
-/* ---------- WI BAR ---------- */
+/* ===== WI BAR ===== */
 .wi-bar{
-  display:flex;gap:8px;padding:10px;border-top:1px solid var(--border);
-  background:#fafafa
+  display:flex;
+  gap:10px;
+  padding:12px;
+  border-top:1px solid var(--border);
+  background:#fafafa;
 }
 .wi-bar button{
-  flex:1;height:40px;border-radius:10px;border:none;font-size:14px
+  flex:1;
+  height:42px;
+  border-radius:12px;
+  border:none;
+  font-size:14px;
 }
-.wi-bar button.on{background:var(--red);color:#fff}
-.wi-bar button.off{background:#e5e7eb;color:#6b7280}
+.wi-bar button.on{
+  background:var(--brand);
+  color:#fff;
+}
+.wi-bar button.off{
+  background:#e5e7eb;
+  color:#6b7280;
+}
 
-/* ---------- Modal ---------- */
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;
-  align-items:center;justify-content:center}
-.modal img{max-width:95vw;max-height:90vh}
+/* ===== MODAL ===== */
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.75);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+.modal img{
+  max-width:95vw;
+  max-height:90vh;
+}
 
-/* ---------- Mobile ---------- */
+/* ===== MOBILE ===== */
 @media (max-width:640px){
   .grid{grid-template-columns:1fr}
   .item-body{flex-direction:column-reverse}
   .layout{width:100%}
-  .layout img{height:180px}
+  .layout img{height:200px}
   .wi-bar{flex-direction:column}
-  .wi-bar button{width:100%}
 }
 </style>
 </head>
@@ -89,8 +198,16 @@ button.secondary{background:#eef2ff;color:var(--blue);border:none}
 <body>
 <div class="wrap">
 
-<!-- SEARCH -->
+<!-- HEADER -->
 <div class="header">
+  <div class="logo">
+    <img src="assets/logo.png" alt="Company Logo">
+  </div>
+  <div class="title">ระบบค้นหาตำแหน่งงาน</div>
+</div>
+
+<!-- SEARCH -->
+<div class="search-card">
   <div class="row">
     <input id="q" placeholder="ค้นหางาน / ลูกค้า / ตำแหน่ง">
     <button class="primary" onclick="doSearch()">ค้นหา</button>
@@ -99,10 +216,11 @@ button.secondary{background:#eef2ff;color:var(--blue);border:none}
 </div>
 
 <!-- RESULT -->
-<div class="grid" id="list"></div>
+<div id="list" class="grid"></div>
 
 </div>
 
+<!-- MODAL -->
 <div id="modal" class="modal" onclick="this.style.display='none'">
   <img id="modalImg">
 </div>
@@ -124,7 +242,7 @@ const ok=v=>v && v!=="#N/A";
 function card(it){
   const hasWI = ok(it.wi_front_url)||ok(it.wi_back_url)||ok(it.label_image_url);
   return `
-  <div class="item">
+  <div class="item" onclick="setActive(this)">
     <div class="item-body">
       <div class="info">
         <div class="field">
@@ -143,17 +261,16 @@ function card(it){
       </div>
     </div>
     <div class="wi-bar">
-      <button class="${ok(it.wi_front_url)?'on':'off'}" onclick="${ok(it.wi_front_url)?`openModal('${it.wi_front_url}')`:''}">
-        WI หน้า
-      </button>
-      <button class="${ok(it.wi_back_url)?'on':'off'}" onclick="${ok(it.wi_back_url)?`openModal('${it.wi_back_url}')`:''}">
-        WI หลัง
-      </button>
-      <button class="${ok(it.label_image_url)?'on':'off'}" onclick="${ok(it.label_image_url)?`openModal('${it.label_image_url}')`:''}">
-        สติ๊กเกอร์
-      </button>
+      <button class="${ok(it.wi_front_url)?'on':'off'}" onclick="${ok(it.wi_front_url)?`openModal('${it.wi_front_url}')`:''}">WI หน้า</button>
+      <button class="${ok(it.wi_back_url)?'on':'off'}" onclick="${ok(it.wi_back_url)?`openModal('${it.wi_back_url}')`:''}">WI หลัง</button>
+      <button class="${ok(it.label_image_url)?'on':'off'}" onclick="${ok(it.label_image_url)?`openModal('${it.label_image_url}')`:''}">สติ๊กเกอร์</button>
     </div>
   </div>`;
+}
+
+function setActive(el){
+  document.querySelectorAll(".item").forEach(i=>i.classList.remove("active"));
+  el.classList.add("active");
 }
 
 async function loadList(){
