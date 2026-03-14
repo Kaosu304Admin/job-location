@@ -155,8 +155,6 @@ button.secondary{background:#eef2ff;color:var(--blue);border:none;cursor:pointer
   border-radius:50%;margin:10px auto;animation:spin 1s linear infinite;
 }
 @keyframes spin{to{transform:rotate(360deg)}}
-.loading-text{font-size:14px;color:#374151}
-.loading-sub{font-size:12px;color:var(--muted);margin-top:6px}
 
 /* ===== MOBILE ===== */
 @media (max-width:640px){
@@ -213,8 +211,6 @@ button.secondary{background:#eef2ff;color:var(--blue);border:none;cursor:pointer
   <div class="loading-box">
     <img src="assets/logo.png" class="loading-logo" alt="logo">
     <div class="spinner"></div>
-    <div class="loading-text" id="loadingText">กำลังโหลดข้อมูล...</div>
-    <div class="loading-sub" id="loadingSub">กรุณารอสักครู่</div>
   </div>
 </div>
 
@@ -248,9 +244,7 @@ function jsonp(url){
   });
 }
 
-function showLoading(text="กำลังโหลดข้อมูล...", sub="กรุณารอสักครู่"){
-  loadingText.textContent = text;
-  loadingSub.textContent = sub;
+function showLoading();{
   loading.style.display="flex";
 }
 function hideLoading(){ loading.style.display="none"; }
