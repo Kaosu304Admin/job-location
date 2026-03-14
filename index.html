@@ -1,77 +1,419 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ระบบระบุตำแหน่งงาน</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ระบบระบุตำแหน่งงาน</title>
 
-<style>
-body{font-family:system-ui;background:#f8fafc;margin:0}
-.wrap{max-width:1000px;margin:auto;padding:16px}
+  <style>
+    :root{
+      --brand-red:#c1121f;
+      --brand-red-dark:#9b0f18;
+      --brand-blue:#1d4ed8;
 
-.card{
-  background:#fff;
-  border-radius:14px;
-  padding:16px;
-  margin-bottom:16px;
-  box-shadow:0 8px 24px rgba(0,0,0,.08)
-}
-.item{
-  border:1px solid #e5e7eb;
-  border-radius:14px;
-  padding:14px;
-  margin-bottom:12px
-}
-.tag{font-size:12px;color:#555}
-.k{font-weight:700}
+      --bg:#f8fafc;
+      --card:#ffffff;
+      --border:#e5e7eb;
+      --text:#111827;
+      --muted:#6b7280;
+    }
 
-.wi-actions{display:flex;gap:8px;margin-top:10px}
-.wi-actions button{flex:1}
-</style>
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Arial;
+      background:var(--bg);
+      color:var(--text);
+    }
+    .wrap{max-width:1100px;margin:0 auto;padding:14px}
+
+    /* Header */
+    .header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+    .logo-box{
+      width:40px;height:40px;border-radius:10px;background:#fff;border:1px solid var(--border);
+      display:flex;align-items:center;justify-content:center;overflow:hidden;flex:0 0 auto;
+    }
+    .logo-box img{max-width:100%;max-height:100%;object-fit:contain;display:block}
+    h1{font-size:18px;margin:0}
+    .subtitle{font-size:13px;color:var(--muted)}
+
+    /* Cards / Inputs */
+    .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px;margin:12px 0}
+    .row{display:flex;gap:8px;flex-wrap:wrap}
+
+    input,button{height:44px;border-radius:12px;padding:0 12px;font-size:15px}
+    input{flex:1;min-width:200px;border:1px solid var(--border);outline:none}
+    input:focus{border-color:rgba(29,78,216,.45);box-shadow:0 0 0 3px rgba(29,78,216,.12)}
+
+    button{background:var(--brand-red);color:#fff;border:none;cursor:pointer}
+    button:hover{background:var(--brand-red-dark)}
+    button.secondary{background:#eef2ff;color:var(--brand-blue);border:1px solid #c7d2fe}
+    button:disabled{opacity:.5;cursor:not-allowed}
+
+    .muted{font-size:13px;color:var(--muted);line-height:1.4}
+
+    /* Grid + Item Card */
+    .grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));}
+
+    .item{
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:14px;
+      background:#fff;
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      cursor:pointer;
+      transition:transform .2s ease, box-shadow .2s ease, background .12s ease;
+      box-shadow:0 10px 28px rgba(0,0,0,.08), 0 2px 6px rgba(0,0,0,.04);
+    }
+    .item:hover{
+      background:#fafafa;
+      transform:translateY(-2px);
+      box-shadow:0 16px 40px rgba(0,0,0,.12), 0 4px 10px rgba(0,0,0,.06);
+    }
+    .item .info{flex:1}
+    .item .thumb{width:120px;min-width:120px}
+    .item .thumb img{width:100%;max-height:90px;object-fit:cover;border-radius:10px;display:block}
+
+    .tag{
+      display:inline-block;padding:2px 10px;border-radius:999px;
+      background:#eef2ff;border:1px solid #c7d2fe;color:var(--brand-blue);
+      font-size:12px;margin-right:6px;
+    }
+    .k{font-weight:600}
+
+    @media (max-width:640px){
+      .grid{grid-template-columns:1fr}
+      .item{align-items:center}
+      .item .thumb{width:90px;min-width:90px}
+      button{flex:1}
+    }
+
+    /* Modal */
+    .modal{
+      position:fixed;inset:0;background:rgba(0,0,0,.7);
+      display:none;align-items:center;justify-content:center;z-index:9999;
+    }
+    .modal-content{background:#fff;border-radius:14px;padding:10px;max-width:95vw;max-height:95vh}
+    .modal-content img{width:100%;max-height:90vh;object-fit:contain;border-radius:10px;display:block}
+
+    /* ===== WI CARD (Luxury Minimal) ===== */
+    .wi-card{
+      background:#fff;border-radius:18px;padding:18px;margin:18px 0;
+      border:1px solid rgba(17,24,39,.06);
+      box-shadow:0 16px 40px rgba(0,0,0,.10), 0 4px 12px rgba(0,0,0,.06);
+      transition:transform .22s ease, box-shadow .22s ease;
+    }
+    .wi-card:hover{
+      transform:translateY(-2px);
+      box-shadow:0 22px 55px rgba(0,0,0,.14), 0 6px 16px rgba(0,0,0,.08);
+    }
+    .wi-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    .wi-title{font-size:20px;font-weight:800}
+    .wi-sub{font-size:12px;color:var(--muted)}
+    .wi-info{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0 16px}
+    .wi-info span{font-size:12px;color:var(--muted)}
+    .wi-info b{font-size:15px}
+    .wi-actions{display:flex;gap:10px;flex-wrap:wrap}
+    .wi-actions button{flex:1}
+
+    /* ===== GLOBAL LOADING ===== */
+    .loading-overlay{
+      position:fixed;inset:0;background:rgba(255,255,255,.85);
+      backdrop-filter:blur(4px);
+      display:flex;align-items:center;justify-content:center;z-index:10000;
+    }
+    .loading-box{
+      background:#fff;padding:28px 36px;border-radius:20px;text-align:center;
+      box-shadow:0 20px 50px rgba(0,0,0,.15), 0 6px 14px rgba(0,0,0,.08);
+    }
+    .loading-logo{width:64px;margin-bottom:12px;animation:logo-bounce 1.2s infinite ease-in-out}
+    @keyframes logo-bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+    .spinner{
+      width:36px;height:36px;border:4px solid #e5e7eb;border-top:4px solid var(--brand-red);
+      border-radius:50%;margin:12px auto;animation:spin 1s linear infinite;
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .loading-text{font-size:14px;color:#374151;margin-top:6px}
+  </style>
 </head>
 
 <body>
 <div class="wrap">
-  <h2>รายการงาน</h2>
-  <div id="list"></div>
+
+  <div class="header">
+    <div class="logo-box">
+      <img src="assets/logo.png" alt="Company Logo">
+    </div>
+    <div>
+      <h1 id="appTitle"></h1>
+      <div class="subtitle" id="appSubtitle"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <input id="q">
+      <button id="btnSearch"></button>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <input id="loc">
+      <button class="secondary" id="btnLoc"></button>
+      <input id="cus">
+      <button class="secondary" id="btnCus"></button>
+    </div>
+    <div class="muted" style="margin-top:10px">
+      • หากยังไม่ค้นหา ระบบจะแสดงรายการฐานข้อมูลด้านล่าง<br>
+      • สามารถค้นหาได้ทั้ง “ชื่องาน / ตำแหน่งจัดเก็บ / ลูกค้า”
+    </div>
+  </div>
+
+  <div id="status" class="muted"></div>
+  <div id="out" class="card" style="display:none"></div>
+
+  <!-- ===== WI CARD : TEST 1 PART ===== -->
+  <div class="wi-card">
+    <div class="wi-header">
+      <div class="wi-title">F5111/5112</div>
+      <div class="wi-sub">Work Instruction</div>
+    </div>
+    <div class="wi-info">
+      <div><span>📦 แพ็คกิ้ง</span><b>55x150G0</b></div>
+      <div><span>🏷️ สีสติ๊กเกอร์</span><b>สีฟ้า</b></div>
+    </div>
+    <div class="wi-actions">
+      <!-- แก้ URL ทั้ง 3 จุดนี้เป็น Direct Image URL (uc?id=...) -->
+      <button onclick="openModal('PASTE_FRONT_WI_URL_HERE')">WI หน้าเครื่อง</button>
+      <button onclick="openModal('PASTE_BACK_WI_URL_HERE')">WI หลังเครื่อง</button>
+      <button class="secondary" onclick="openModal('PASTE_LABEL_URL_HERE')">ดูสติ๊กเกอร์</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="row" style="justify-content:space-between;align-items:center">
+      <b id="allItemsTitle"></b>
+      <button id="btnMore" class="secondary"></button>
+    </div>
+    <div id="list" class="grid" style="margin-top:10px"></div>
+  </div>
+
+</div>
+
+<!-- ===== IMAGE MODAL ===== -->
+<div id="layoutModal" class="modal">
+  <div class="modal-content">
+    <img id="modalImage" src="" alt="image">
+  </div>
+</div>
+
+<!-- ===== GLOBAL LOADING ===== -->
+<div id="globalLoading" class="loading-overlay" style="display:none">
+  <div class="loading-box">
+    <img src="assets/logo.png" class="loading-logo">
+    <div class="spinner"></div>
+    <div class="loading-text">กำลังโหลดข้อมูล...</div>
+  </div>
 </div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbyh1nb5-K1oI5Sa9qeaVirBfj_ent1OW0j8Mzpvyk_JOFQKWWwyut2A_GWykkTA8fsBvA/exec";
+  const WORDS = {
+    appTitle:"ระบบระบุตำแหน่งงาน",
+    subtitle:"ค้นหาตำแหน่งจัดเก็บ • ชื่องาน • ลูกค้า",
+    placeholderSearch:"ค้นหาชื่องาน / ตำแหน่งจัดเก็บ / ลูกค้า",
+    placeholderLocation:"ตำแหน่งจัดเก็บ (เช่น A1-01)",
+    placeholderCustomer:"รหัสลูกค้า",
+    btnSearch:"ค้นหา",
+    btnLocation:"ดูตำแหน่งจัดเก็บ",
+    btnCustomer:"ดูลูกค้า",
+    btnMore:"แสดงเพิ่มเติม",
+    labelLocation:"ตำแหน่งจัดเก็บ",
+    labelCustomer:"ลูกค้า",
+    labelPart:"ชื่องาน",
+    allItems:"รายการทั้งหมด",
+    loading:"กำลังโหลดข้อมูล...",
+    notFound:"ไม่พบข้อมูล"
+  };
 
-function openImg(url){
-  window.open(url,"_blank");
-}
+  const API_BASE = "https://script.google.com/macros/s/AKfycbyh1nb5-K1oI5Sa9qeaVirBfj_ent1OW0j8Mzpvyk_JOFQKWWwyut2A_GWykkTA8fsBvA/exec";
 
-function card(it){
+  const el = {
+    appTitle: document.getElementById("appTitle"),
+    appSubtitle: document.getElementById("appSubtitle"),
+    q: document.getElementById("q"),
+    loc: document.getElementById("loc"),
+    cus: document.getElementById("cus"),
+    btnSearch: document.getElementById("btnSearch"),
+    btnLoc: document.getElementById("btnLoc"),
+    btnCus: document.getElementById("btnCus"),
+    btnMore: document.getElementById("btnMore"),
+    allItemsTitle: document.getElementById("allItemsTitle"),
+    status: document.getElementById("status"),
+    out: document.getElementById("out"),
+    list: document.getElementById("list"),
+    layoutModal: document.getElementById("layoutModal"),
+    modalImage: document.getElementById("modalImage")
+  };
+
+  function applyWords(){
+    el.appTitle.textContent = WORDS.appTitle;
+    el.appSubtitle.textContent = WORDS.subtitle;
+    el.q.placeholder = WORDS.placeholderSearch;
+    el.loc.placeholder = WORDS.placeholderLocation;
+    el.cus.placeholder = WORDS.placeholderCustomer;
+    el.btnSearch.textContent = WORDS.btnSearch;
+    el.btnLoc.textContent = WORDS.btnLocation;
+    el.btnCus.textContent = WORDS.btnCustomer;
+    el.btnMore.textContent = WORDS.btnMore;
+    el.allItemsTitle.textContent = WORDS.allItems;
+  }
+
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, m => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[m]));
+
+  let offset = 0;
+  const limit = 50;
+
+  function jsonp(url){
+    return new Promise((resolve, reject) => {
+      const cb = "cb_" + Math.random().toString(36).slice(2);
+      const script = document.createElement("script");
+      window[cb] = (data) => { delete window[cb]; script.remove(); resolve(data); };
+      script.src = url + (url.includes("?") ? "&" : "?") + "callback=" + cb;
+      script.onerror = () => { delete window[cb]; script.remove(); reject(new Error("JSONP load failed")); };
+      document.body.appendChild(script);
+    });
+  }
+
+  function showLoading(){ document.getElementById("globalLoading").style.display = "flex"; }
+  function hideLoading(){ document.getElementById("globalLoading").style.display = "none"; }
+
+  function openModal(src){
+    if(!src) return;
+    el.modalImage.src = src;
+    el.layoutModal.style.display = "flex";
+  }
+  function closeModal(){
+    el.layoutModal.style.display = "none";
+    el.modalImage.src = "";
+  }
+  el.layoutModal.addEventListener("click", closeModal);
+  el.layoutModal.querySelector(".modal-content").addEventListener("click", (e)=>e.stopPropagation());
+
+  function showOut(html){
+    el.out.style.display = "block";
+    el.out.innerHTML = html;
+    el.out.scrollIntoView({behavior:"smooth", block:"start"});
+  }
+
+  function cardItem(it){
+  const layout = it.layout_image_url || "";
+
+  // ✅ ตอนนี้เรายัง "ทดสอบก่อน" โดยให้ WI ใส่ไว้เป็นค่าว่างหรือใส่ URL ตรง ๆ ก็ได้
+  // ถ้าคุณยังไม่ดึงจากชีท ให้ลองใส่ URL ของงานตัวอย่างไว้ก่อน (ชั่วคราว)
+  // เช่น:
+  // const wiFront = "https://drive.google.com/uc?id=FILE_ID";
+  // แต่ถ้าใน it มีค่าอยู่แล้วในอนาคต เราจะเปลี่ยนเป็น it.wi_front_url ได้
+  const wiFront = it.wi_front_url || "";       // อนาคตดึงจากชีท
+  const wiBack  = it.wi_back_url  || "";       // อนาคตดึงจากชีท
+  const label   = it.label_image_url || "";    // อนาคตดึงจากชีท
+
   return `
-    <div class="item">
-      <div><span class="tag">ตำแหน่ง:</span> <span class="k">${it.location_code||""}</span></div>
-      <div><span class="tag">งาน:</span> ${it.part_name||""}</div>
-      <div><span class="tag">แพ็คกิ้ง:</span> ${it.packing_type||""}</div>
-      <div><span class="tag">สีสติ๊กเกอร์:</span> ${it.label_color||""}</div>
+    <div class="item" data-layout="${esc(layout)}">
+      <div class="info">
+        <div>
+          <span class="tag">${WORDS.labelLocation}</span>
+          <span class="k">${esc(it.location_code)}</span>
+        </div>
 
-      <div class="wi-actions">
-        ${it.wi_front_url?`<button onclick="openImg('${it.wi_front_url}')">WI หน้าเครื่อง</button>`:""}
-        ${it.wi_back_url?`<button onclick="openImg('${it.wi_back_url}')">WI หลังเครื่อง</button>`:""}
-        ${it.label_image_url?`<button onclick="openImg('${it.label_image_url}')">สติ๊กเกอร์</button>`:""}
+        <div>
+          <span class="tag">${WORDS.labelCustomer}</span>
+          ${esc(it.customer_code)}
+        </div>
+
+        <div>
+          <span class="tag">${WORDS.labelPart}</span>
+          ${esc(it.part_name)}
+        </div>
+
+        <!-- ✅ WI buttons อยู่ใน card เดียวกัน -->
+        <div class="wi-actions" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+          ${wiFront ? `<button type="button" onclick="openModal('${esc(wiFront)}')">WI หน้าเครื่อง</button>` : ``}
+          ${wiBack  ? `<button type="button" onclick="openModal('${esc(wiBack)}')">WI หลังเครื่อง</button>` : ``}
+          ${label   ? `<button type="button" class="secondary" onclick="openModal('${esc(label)}')">สติ๊กเกอร์</button>` : ``}
+        </div>
+
       </div>
+
+      ${layout ? `
+      <div class="thumb">
+        <img src="${esc(layout)}" alt="layout">
+      </div>` : ``}
     </div>
   `;
 }
+  function renderGrid(items){
+    if(!items || !items.length) return `<p class="muted">${WORDS.notFound}</p>`;
+    return `<div class="grid">${items.map(cardItem).join("")}</div>`;
+  }
 
-function load(){
-  const cb="cb"+Math.random().toString(36).slice(2);
-  window[cb]=res=>{
-    document.getElementById("list").innerHTML =
-      res.items.map(card).join("");
+  document.addEventListener("click", (e) => {
+    const item = e.target.closest(".item[data-layout]");
+    if (!item) return;
+    const src = item.getAttribute("data-layout");
+    if (src) openModal(src);
+  });
+
+  el.btnSearch.onclick = async () => {
+    const q = el.q.value.trim();
+    if(!q) return;
+    showLoading();
+    try{
+      const data = await jsonp(`${API_BASE}?action=search&q=${encodeURIComponent(q)}`);
+      showOut(renderGrid(data.results));
+    } finally { hideLoading(); }
   };
-  const s=document.createElement("script");
-  s.src=`${API}?action=list&limit=20&callback=${cb}`;
-  document.body.appendChild(s);
-}
 
-load();
+  el.btnLoc.onclick = async () => {
+    const code = el.loc.value.trim();
+    if(!code) return;
+    showLoading();
+    try{
+      const data = await jsonp(`${API_BASE}?action=location&code=${encodeURIComponent(code)}`);
+      showOut(renderGrid(data.items));
+    } finally { hideLoading(); }
+  };
+
+  el.btnCus.onclick = async () => {
+    const code = el.cus.value.trim();
+    if(!code) return;
+    showLoading();
+    try{
+      const data = await jsonp(`${API_BASE}?action=customer&code=${encodeURIComponent(code)}`);
+      showOut(renderGrid((data.locations||[]).flatMap(g=>g.items||[])));
+    } finally { hideLoading(); }
+  };
+
+  async function loadMore(){
+    showLoading();
+    try{
+      const d = await jsonp(`${API_BASE}?action=list&limit=${limit}&offset=${offset}`);
+      offset += d.returned;
+      el.list.insertAdjacentHTML("beforeend", (d.items || []).map(cardItem).join(""));
+      if(d.returned < limit) el.btnMore.disabled = true;
+    } finally { hideLoading(); }
+  }
+
+  el.btnMore.onclick = loadMore;
+
+  showLoading();
+  applyWords();
+  loadMore();
+  .wi-actions button{
+  flex:1;
+  min-width:140px;
+}
 </script>
 </body>
 </html>
