@@ -1,265 +1,43 @@
 <!doctype html>
-<html lang="th">
+<html>
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ระบบระบุตำแหน่งงาน</title>
-
-<style>
-:root{
-  --brand-red:#c1121f;
-  --brand-red-dark:#9b0f18;
-  --brand-blue:#1d4ed8;
-  --bg:#f8fafc;
-  --border:#e5e7eb;
-  --text:#111827;
-  --muted:#6b7280;
-}
-
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:system-ui,-apple-system,Segoe UI,Arial;
-  background:var(--bg);
-  color:var(--text);
-}
-.wrap{max-width:1100px;margin:0 auto;padding:14px}
-
-.card{
-  background:#fff;
-  border-radius:18px;
-  padding:14px;
-  margin:14px 0;
-  box-shadow:0 10px 30px rgba(0,0,0,.08);
-}
-
-.grid{
-  display:grid;
-  gap:14px;
-  grid-template-columns:repeat(auto-fit,minmax(360px,1fr));
-}
-
-/* ===== ITEM CARD ===== */
-.item{
-  border:1px solid var(--border);
-  border-radius:18px;
-  overflow:hidden;
-  background:#fff;
-  transition:.25s ease;
-}
-.item:hover{
-  transform:translateY(-3px);
-  box-shadow:0 18px 45px rgba(0,0,0,.16);
-}
-
-.item-body{
-  display:flex;
-  gap:14px;
-  padding:14px;
-  align-items:flex-start;
-}
-
-.info{
-  flex:1;
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-}
-
-.layout-right{
-  width:180px;
-  min-width:180px;
-}
-.layout-right img{
-  width:100%;
-  height:150px;
-  object-fit:cover;
-  border-radius:14px;
-  cursor:pointer;
-  box-shadow:0 10px 24px rgba(0,0,0,.12);
-}
-
-.tag{
-  display:inline-block;
-  padding:2px 10px;
-  border-radius:999px;
-  background:#eef2ff;
-  border:1px solid #c7d2fe;
-  color:var(--brand-blue);
-  font-size:12px;
-  margin-right:6px;
-}
-.k{font-weight:700}
-
-/* ===== WI BAR ===== */
-.wi-bar{
-  display:flex;
-  gap:8px;
-  padding:10px;
-  border-top:1px solid var(--border);
-  background:#fafafa;
-}
-.wi-bar button{
-  flex:1;
-  height:42px;
-  border-radius:12px;
-  border:none;
-  cursor:pointer;
-  font-size:14px;
-  background:var(--brand-red);
-  color:#fff;
-}
-.wi-bar button:hover{ background:var(--brand-red-dark); }
-.wi-bar button.secondary{
-  background:#eef2ff;
-  color:var(--brand-blue);
-  border:1px solid #c7d2fe;
-}
-
-/* ===== MODAL ===== */
-.modal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.75);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:9999;
-}
-.modal-content{
-  background:#fff;
-  border-radius:16px;
-  padding:10px;
-  max-width:95vw;
-  max-height:95vh;
-}
-.modal-content img{
-  width:100%;
-  max-height:90vh;
-  object-fit:contain;
-  display:block;
-}
-
-/* ===== Mobile ===== */
-@media (max-width:640px){
-  .grid{grid-template-columns:1fr}
-  .item-body{flex-direction:column-reverse}
-  .layout-right{width:100%}
-  .layout-right img{height:180px}
-  .wi-bar{flex-direction:column}
-}
-</style>
+<title>TEST API</title>
 </head>
-
 <body>
-<div class="wrap">
 
-<div class="card">
-  <b>รายการงาน</b>
-  <div id="list" class="grid" style="margin-top:12px"></div>
-</div>
-
-</div>
-
-<!-- MODAL -->
-<div id="modal" class="modal" onclick="closeModal()">
-  <div class="modal-content" onclick="event.stopPropagation()">
-    <img id="modalImg" alt="preview">
-  </div>
-</div>
+<h2>ทดสอบเรียก Google Script</h2>
+<div id="out">กำลังโหลด...</div>
 
 <script>
-// ================= CONFIG =================
-// 🔴 ใส่ URL /exec ของคุณตรงนี้
-const API_BASE = "https://script.google.com/macros/s/PUT_YOUR_SCRIPT_ID_HERE/exec";
+const API_BASE = "https://script.google.com/macros/s/XXXXXXXX/exec";
 
-// ================= JSONP =================
 function jsonp(url){
-  return new Promise((resolve, reject)=>{
-    const cb = "cb_" + Math.random().toString(36).slice(2);
-    window[cb] = data => {
-      delete window[cb];
-      script.remove();
-      resolve(data);
-    };
-    const script = document.createElement("script");
-    script.src = url + (url.includes("?") ? "&" : "?") + "callback=" + cb;
-    script.onerror = () => reject(new Error("JSONP load failed"));
+  return new Promise((resolve,reject)=>{
+    const cb="cb_"+Math.random().toString(36).slice(2);
+    window[cb]=d=>{delete window[cb];script.remove();resolve(d);}
+    const script=document.createElement("script");
+    script.src=url+(url.includes("?")?"&":"?")+"callback="+cb;
+    script.onerror=()=>reject("load fail");
     document.body.appendChild(script);
   });
 }
 
-// ================= RENDER =================
-function cardItem(it){
-  return `
-    <div class="item">
-      <div class="item-body">
-        <div class="info">
-          <div><span class="tag">ตำแหน่ง</span><span class="k">${it.location_code || ""}</span></div>
-          <div><span class="tag">ลูกค้า</span>${it.customer_code || ""}</div>
-          <div><span class="tag">งาน</span>${it.part_name || ""}</div>
-          ${it.packing_type ? `<div><span class="tag">แพ็ค</span>${it.packing_type}</div>` : ``}
-          ${it.label_color ? `<div><span class="tag">สติ๊กเกอร์</span>${it.label_color}</div>` : ``}
-        </div>
-
-        <div class="layout-right">
-          ${it.layout_image_url ? `
-            <img src="${it.layout_image_url}"
-                 alt="layout"
-                 onclick="openModal('${it.layout_image_url}')">`
-          : ``}
-        </div>
-      </div>
-
-      <div class="wi-bar">
-        ${it.wi_front_url ? `<button onclick="event.stopPropagation(); openModal('${it.wi_front_url}')">WI หน้าเครื่อง</button>` : ``}
-        ${it.wi_back_url  ? `<button onclick="event.stopPropagation(); openModal('${it.wi_back_url}')">WI หลังเครื่อง</button>` : ``}
-        ${it.label_image_url ? `<button class="secondary" onclick="event.stopPropagation(); openModal('${it.label_image_url}')">สติ๊กเกอร์</button>` : ``}
-      </div>
-    </div>
-  `;
-}
-
-// ================= LOAD =================
 async function load(){
   try{
-    const res = await jsonp(API_BASE + "?action=list&limit=200");
-
-    console.log("API RESPONSE:", res);
-
-    if(!res || !res.ok){
-      document.getElementById("list").innerHTML =
-        "<div>❌ API ไม่ส่ง ok:true</div>";
+    const res = await jsonp(API_BASE+"?action=list");
+    if(!res.ok){
+      document.getElementById("out").innerText="API ไม่ส่ง ok:true";
       return;
     }
-
-    if(!res.items || res.items.length === 0){
-      document.getElementById("list").innerHTML =
-        "<div>⚠️ ไม่มีข้อมูลใน DATA</div>";
-      return;
-    }
-
-    document.getElementById("list").innerHTML =
-      res.items.map(cardItem).join("");
-
-  }catch(err){
-    document.getElementById("list").innerHTML =
-      "<div>❌ เรียก API ไม่ได้</div>";
-    console.error(err);
+    document.getElementById("out").innerHTML =
+      res.items.map(i=>`<div>${i.part_name}</div>`).join("");
+  }catch(e){
+    document.getElementById("out").innerText="เรียก API ไม่ได้";
   }
 }
 load();
-
-// ================= MODAL =================
-function openModal(src){
-  if(!src) return;
-  document.getElementById("modalImg").src = src;
-  document.getElementById("modal").style.display = "flex";
-}
-function closeModal(){
-  document.getElementById("modal").style.display = "none";
-  document.getElementById("modalImg").src = "";
-}
 </script>
+
 </body>
 </html>
