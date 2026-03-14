@@ -53,7 +53,7 @@ body{
   box-shadow:0 18px 45px rgba(0,0,0,.16);
 }
 
-/* body: info left / layout right (top) */
+/* body: info left / layout right */
 .item-body{
   display:flex;
   gap:14px;
@@ -94,7 +94,7 @@ body{
 }
 .k{font-weight:700}
 
-/* ===== WI BAR (bottom) ===== */
+/* ===== WI BAR ===== */
 .wi-bar{
   display:flex;
   gap:8px;
@@ -146,18 +146,10 @@ body{
 /* ===== Mobile ===== */
 @media (max-width:640px){
   .grid{grid-template-columns:1fr}
-  .item-body{
-    flex-direction:column-reverse;
-  }
-  .layout-right{
-    width:100%;
-  }
-  .layout-right img{
-    height:180px;
-  }
-  .wi-bar{
-    flex-direction:column;
-  }
+  .item-body{flex-direction:column-reverse}
+  .layout-right{width:100%}
+  .layout-right img{height:180px}
+  .wi-bar{flex-direction:column}
 }
 </style>
 </head>
@@ -166,7 +158,7 @@ body{
 <div class="wrap">
 
 <div class="card">
-  <b>ทดสอบการ์ดงาน (Layout มุมบนขวา + WI แถบล่าง)</b>
+  <b>รายการงาน</b>
   <div id="list" class="grid" style="margin-top:12px"></div>
 </div>
 
@@ -180,51 +172,70 @@ body{
 </div>
 
 <script>
-// ===== DATA ตัวอย่าง (แทน API ก่อน) =====
-const DATA = [
-  {
-    location_code:"A1-01",
-    customer_code:"HONDA",
-    part_name:"F5111/5112",
+// ================= CONFIG =================
+// 🔴 แก้เป็น URL /exec ของคุณ
+const API_BASE = "https://script.google.com/macros/s/XXXX/exec";
 
-    // ✅ รูป Layout (ผังจริง)
-    layout_image_url:"https://drive.google.com/thumbnail?id=1REPLACE_WITH_LAYOUT_IMAGE_ID&sz=w1200",
+// ================= JSONP =================
+function jsonp(url){
+  return new Promise((resolve, reject)=>{
+    const cb = "cb_" + Math.random().toString(36).slice(2);
+    window[cb] = data => {
+      delete window[cb];
+      script.remove();
+      resolve(data);
+    };
+    const script = document.createElement("script");
+    script.src = url + (url.includes("?") ? "&" : "?") + "callback=" + cb;
+    script.onerror = () => reject(new Error("JSONP load failed"));
+    document.body.appendChild(script);
+  });
+}
 
-    // ✅ WI
-    wi_front_url:"https://drive.google.com/thumbnail?id=1YM-FyMyDJYoHs1-T8laNyvBl__8PWrSM&sz=w2000",
-    wi_back_url:"https://drive.google.com/thumbnail?id=1L4wxNr5lyvqfAuKTZ7w6RgCkkyEvLWAs&sz=w2000",
-    label_image_url:"https://drive.google.com/thumbnail?id=12EfYfvErhbsq114RSNONSbMKjIumuuyg&sz=w2000"
-  }
-];
-
+// ================= RENDER =================
 function cardItem(it){
   return `
     <div class="item">
       <div class="item-body">
         <div class="info">
-          <div><span class="tag">ตำแหน่ง</span><span class="k">${it.location_code}</span></div>
-          <div><span class="tag">ลูกค้า</span>${it.customer_code}</div>
-          <div><span class="tag">งาน</span>${it.part_name}</div>
+          <div><span class="tag">ตำแหน่ง</span><span class="k">${it.location_code || ""}</span></div>
+          <div><span class="tag">ลูกค้า</span>${it.customer_code || ""}</div>
+          <div><span class="tag">งาน</span>${it.part_name || ""}</div>
+          ${it.packing_type ? `<div><span class="tag">แพ็ค</span>${it.packing_type}</div>` : ``}
+          ${it.label_color ? `<div><span class="tag">สติ๊กเกอร์</span>${it.label_color}</div>` : ``}
         </div>
 
         <div class="layout-right">
-          <img src="${it.layout_image_url}" alt="layout"
-               onclick="openModal('${it.layout_image_url}')">
+          ${it.layout_image_url ? `
+            <img src="${it.layout_image_url}"
+                 alt="layout"
+                 onclick="openModal('${it.layout_image_url}')">`
+          : ``}
         </div>
       </div>
 
       <div class="wi-bar">
-        <button onclick="event.stopPropagation(); openModal('${it.wi_front_url}')">WI หน้าเครื่อง</button>
-        <button onclick="event.stopPropagation(); openModal('${it.wi_back_url}')">WI หลังเครื่อง</button>
-        <button class="secondary" onclick="event.stopPropagation(); openModal('${it.label_image_url}')">สติ๊กเกอร์</button>
+        ${it.wi_front_url ? `<button onclick="event.stopPropagation(); openModal('${it.wi_front_url}')">WI หน้าเครื่อง</button>` : ``}
+        ${it.wi_back_url  ? `<button onclick="event.stopPropagation(); openModal('${it.wi_back_url}')">WI หลังเครื่อง</button>` : ``}
+        ${it.label_image_url ? `<button class="secondary" onclick="event.stopPropagation(); openModal('${it.label_image_url}')">สติ๊กเกอร์</button>` : ``}
       </div>
     </div>
   `;
 }
 
-// render
-document.getElementById("list").innerHTML = DATA.map(cardItem).join("");
+// ================= LOAD DATA =================
+async function load(){
+  const res = await jsonp(API_BASE + "?action=list&limit=200");
+  if(!res.ok){
+    alert("โหลดข้อมูลไม่สำเร็จ");
+    return;
+  }
+  document.getElementById("list").innerHTML =
+    res.items.map(cardItem).join("");
+}
+load();
 
+// ================= MODAL =================
 function openModal(src){
   if(!src) return;
   document.getElementById("modalImg").src = src;
