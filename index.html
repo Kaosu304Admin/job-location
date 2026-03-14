@@ -90,6 +90,18 @@
       button{flex:1}
     }
 
+    /* WI buttons inside card */
+    .wi-actions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
+    .wi-actions button{
+      flex:1;
+      min-width:140px;
+    }
+
     /* Modal */
     .modal{
       position:fixed;inset:0;background:rgba(0,0,0,.7);
@@ -98,27 +110,7 @@
     .modal-content{background:#fff;border-radius:14px;padding:10px;max-width:95vw;max-height:95vh}
     .modal-content img{width:100%;max-height:90vh;object-fit:contain;border-radius:10px;display:block}
 
-    /* ===== WI CARD (Luxury Minimal) ===== */
-    .wi-card{
-      background:#fff;border-radius:18px;padding:18px;margin:18px 0;
-      border:1px solid rgba(17,24,39,.06);
-      box-shadow:0 16px 40px rgba(0,0,0,.10), 0 4px 12px rgba(0,0,0,.06);
-      transition:transform .22s ease, box-shadow .22s ease;
-    }
-    .wi-card:hover{
-      transform:translateY(-2px);
-      box-shadow:0 22px 55px rgba(0,0,0,.14), 0 6px 16px rgba(0,0,0,.08);
-    }
-    .wi-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-    .wi-title{font-size:20px;font-weight:800}
-    .wi-sub{font-size:12px;color:var(--muted)}
-    .wi-info{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0 16px}
-    .wi-info span{font-size:12px;color:var(--muted)}
-    .wi-info b{font-size:15px}
-    .wi-actions{display:flex;gap:10px;flex-wrap:wrap}
-    .wi-actions button{flex:1}
-
-    /* ===== GLOBAL LOADING ===== */
+    /* Global Loading */
     .loading-overlay{
       position:fixed;inset:0;background:rgba(255,255,255,.85);
       backdrop-filter:blur(4px);
@@ -172,24 +164,6 @@
   <div id="status" class="muted"></div>
   <div id="out" class="card" style="display:none"></div>
 
-  <!-- ===== WI CARD : TEST 1 PART ===== -->
-  <div class="wi-card">
-    <div class="wi-header">
-      <div class="wi-title">F5111/5112</div>
-      <div class="wi-sub">Work Instruction</div>
-    </div>
-    <div class="wi-info">
-      <div><span>📦 แพ็คกิ้ง</span><b>55x150G0</b></div>
-      <div><span>🏷️ สีสติ๊กเกอร์</span><b>สีฟ้า</b></div>
-    </div>
-    <div class="wi-actions">
-      <!-- แก้ URL ทั้ง 3 จุดนี้เป็น Direct Image URL (uc?id=...) -->
-      <button onclick="openModal('PASTE_FRONT_WI_URL_HERE')">WI หน้าเครื่อง</button>
-      <button onclick="openModal('PASTE_BACK_WI_URL_HERE')">WI หลังเครื่อง</button>
-      <button class="secondary" onclick="openModal('PASTE_LABEL_URL_HERE')">ดูสติ๊กเกอร์</button>
-    </div>
-  </div>
-
   <div class="card">
     <div class="row" style="justify-content:space-between;align-items:center">
       <b id="allItemsTitle"></b>
@@ -200,17 +174,17 @@
 
 </div>
 
-<!-- ===== IMAGE MODAL ===== -->
+<!-- IMAGE MODAL (ใช้เปิดทั้ง Layout/WI/Sticker) -->
 <div id="layoutModal" class="modal">
   <div class="modal-content">
     <img id="modalImage" src="" alt="image">
   </div>
 </div>
 
-<!-- ===== GLOBAL LOADING ===== -->
+<!-- GLOBAL LOADING -->
 <div id="globalLoading" class="loading-overlay" style="display:none">
   <div class="loading-box">
-    <img src="assets/logo.png" class="loading-logo">
+    <img src="assets/logo.png" class="loading-logo" alt="logo">
     <div class="spinner"></div>
     <div class="loading-text">กำลังโหลดข้อมูล...</div>
   </div>
@@ -235,6 +209,7 @@
     notFound:"ไม่พบข้อมูล"
   };
 
+  // IMPORTANT: ต้องเป็น URL /exec ของ Apps Script (ตัวเดียวกับที่คุณใช้ดึงข้อมูล)
   const API_BASE = "https://script.google.com/macros/s/AKfycbyh1nb5-K1oI5Sa9qeaVirBfj_ent1OW0j8Mzpvyk_JOFQKWWwyut2A_GWykkTA8fsBvA/exec";
 
   const el = {
@@ -268,13 +243,20 @@
     el.allItemsTitle.textContent = WORDS.allItems;
   }
 
+  // Escape HTML (ปลอดภัย) — ไม่ต้องแก้ / ไม่เกี่ยวกับ /
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, m => ({
     "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
   }[m]));
 
+  // กันกรณีเอา URL ที่มี &amp; มาวางในชีท/ระบบ
+  function fixUrl(u){
+    return String(u ?? "").replace(/&amp;/g, "&").trim();
+  }
+
   let offset = 0;
   const limit = 50;
 
+  // JSONP (แก้ CORS) — ต้องใช้ & ไม่ใช่ &amp; [3](https://pantip.com/topic/43744802)[4](https://wukihow.com/th/299668/%E0%B8%A7%E0%B8%B4%E0%B8%98%E0%B8%B5%E0%B8%AA%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%87%E0%B8%A5%E0%B8%B4%E0%B8%87%E0%B8%84%E0%B9%8C%E0%B8%94%E0%B8%B2%E0%B8%A7%E0%B8%99%E0%B9%8C%E0%B9%82%E0%B8%AB%E0%B8%A5%E0%B8%94%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B9%81%E0%B8%8A%E0%B8%A3%E0%B9%8C%E0%B9%84%E0%B8%94%E0%B9%89%E0%B8%AA%E0%B8%B3%E0%B8%AB%E0%B8%A3%E0%B8%B1%E0%B8%9A%E0%B9%84%E0%B8%9F%E0%B8%A5%E0%B9%8C%E0%B8%9A%E0%B8%99-google-drive.html)
   function jsonp(url){
     return new Promise((resolve, reject) => {
       const cb = "cb_" + Math.random().toString(36).slice(2);
@@ -290,8 +272,9 @@
   function hideLoading(){ document.getElementById("globalLoading").style.display = "none"; }
 
   function openModal(src){
-    if(!src) return;
-    el.modalImage.src = src;
+    const url = fixUrl(src);
+    if(!url) return;
+    el.modalImage.src = url;
     el.layoutModal.style.display = "flex";
   }
   function closeModal(){
@@ -307,57 +290,47 @@
     el.out.scrollIntoView({behavior:"smooth", block:"start"});
   }
 
+  // ✅ Card งานใบเดียวรวม WI + Layout
   function cardItem(it){
-  const layout = it.layout_image_url || "";
+    const layout = fixUrl(it.layout_image_url || "");
+    const wiFront = fixUrl(it.wi_front_url || "");
+    const wiBack  = fixUrl(it.wi_back_url  || "");
+    const label   = fixUrl(it.label_image_url || "");
 
-  // ✅ ตอนนี้เรายัง "ทดสอบก่อน" โดยให้ WI ใส่ไว้เป็นค่าว่างหรือใส่ URL ตรง ๆ ก็ได้
-  // ถ้าคุณยังไม่ดึงจากชีท ให้ลองใส่ URL ของงานตัวอย่างไว้ก่อน (ชั่วคราว)
-  // เช่น:
-  // const wiFront = "https://drive.google.com/uc?id=FILE_ID";
-  // แต่ถ้าใน it มีค่าอยู่แล้วในอนาคต เราจะเปลี่ยนเป็น it.wi_front_url ได้
-  const wiFront = it.wi_front_url || "";       // อนาคตดึงจากชีท
-  const wiBack  = it.wi_back_url  || "";       // อนาคตดึงจากชีท
-  const label   = it.label_image_url || "";    // อนาคตดึงจากชีท
+    return `
+      <div class="item" data-layout="${esc(layout)}">
+        <div class="info">
+          <div>
+            <span class="tag">${WORDS.labelLocation}</span>
+            <span class="k">${esc(it.location_code)}</span>
+          </div>
+          <div>
+            <span class="tag">${WORDS.labelCustomer}</span>
+            ${esc(it.customer_code)}
+          </div>
+          <div>
+            <span class="tag">${WORDS.labelPart}</span>
+            ${esc(it.part_name)}
+          </div>
 
-  return `
-    <div class="item" data-layout="${esc(layout)}">
-      <div class="info">
-        <div>
-          <span class="tag">${WORDS.labelLocation}</span>
-          <span class="k">${esc(it.location_code)}</span>
+          <div class="wi-actions">
+            ${wiFront ? `<button type="button" onclick="event.stopPropagation(); openModal('${esc(wiFront)}')">WI หน้าเครื่อง</button>` : ``}
+            ${wiBack  ? `<button type="button" onclick="event.stopPropagation(); openModal('${esc(wiBack)}')">WI หลังเครื่อง</button>` : ``}
+            ${label   ? `<button type="button" class="secondary" onclick="event.stopPropagation(); openModal('${esc(label)}')">สติ๊กเกอร์</button>` : ``}
+          </div>
         </div>
 
-        <div>
-          <span class="tag">${WORDS.labelCustomer}</span>
-          ${esc(it.customer_code)}
-        </div>
-
-        <div>
-          <span class="tag">${WORDS.labelPart}</span>
-          ${esc(it.part_name)}
-        </div>
-
-        <!-- ✅ WI buttons อยู่ใน card เดียวกัน -->
-        <div class="wi-actions" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
-          ${wiFront ? `<button type="button" onclick="openModal('${esc(wiFront)}')">WI หน้าเครื่อง</button>` : ``}
-          ${wiBack  ? `<button type="button" onclick="openModal('${esc(wiBack)}')">WI หลังเครื่อง</button>` : ``}
-          ${label   ? `<button type="button" class="secondary" onclick="openModal('${esc(label)}')">สติ๊กเกอร์</button>` : ``}
-        </div>
-
+        ${layout ? `<div class="thumb"><img src="${esc(layout)}" alt="layout"></div>` : ``}
       </div>
+    `;
+  }
 
-      ${layout ? `
-      <div class="thumb">
-        <img src="${esc(layout)}" alt="layout">
-      </div>` : ``}
-    </div>
-  `;
-}
   function renderGrid(items){
     if(!items || !items.length) return `<p class="muted">${WORDS.notFound}</p>`;
     return `<div class="grid">${items.map(cardItem).join("")}</div>`;
   }
 
+  // คลิกการ์ด = เปิด Layout (ถ้ามี)
   document.addEventListener("click", (e) => {
     const item = e.target.closest(".item[data-layout]");
     if (!item) return;
@@ -365,6 +338,7 @@
     if (src) openModal(src);
   });
 
+  // Actions
   el.btnSearch.onclick = async () => {
     const q = el.q.value.trim();
     if(!q) return;
@@ -372,6 +346,8 @@
     try{
       const data = await jsonp(`${API_BASE}?action=search&q=${encodeURIComponent(q)}`);
       showOut(renderGrid(data.results));
+    } catch(e){
+      showOut(`<p class="muted">❌ เรียก API ไม่สำเร็จ</p>`);
     } finally { hideLoading(); }
   };
 
@@ -382,6 +358,8 @@
     try{
       const data = await jsonp(`${API_BASE}?action=location&code=${encodeURIComponent(code)}`);
       showOut(renderGrid(data.items));
+    } catch(e){
+      showOut(`<p class="muted">❌ เรียก API ไม่สำเร็จ</p>`);
     } finally { hideLoading(); }
   };
 
@@ -391,7 +369,11 @@
     showLoading();
     try{
       const data = await jsonp(`${API_BASE}?action=customer&code=${encodeURIComponent(code)}`);
-      showOut(renderGrid((data.locations||[]).flatMap(g=>g.items||[])));
+      // แสดงเป็นรายการรวม (ง่าย) — เดี๋ยวค่อยทำสรุปแยก location ได้
+      const items = (data.locations || []).flatMap(g => g.items || []);
+      showOut(renderGrid(items));
+    } catch(e){
+      showOut(`<p class="muted">❌ เรียก API ไม่สำเร็จ</p>`);
     } finally { hideLoading(); }
   };
 
@@ -402,18 +384,17 @@
       offset += d.returned;
       el.list.insertAdjacentHTML("beforeend", (d.items || []).map(cardItem).join(""));
       if(d.returned < limit) el.btnMore.disabled = true;
+    } catch(e){
+      showOut(`<p class="muted">❌ โหลดรายการไม่ได้</p>`);
     } finally { hideLoading(); }
   }
 
   el.btnMore.onclick = loadMore;
 
+  // Start
   showLoading();
   applyWords();
   loadMore();
-  .wi-actions button{
-  flex:1;
-  min-width:140px;
-}
 </script>
 </body>
 </html>
