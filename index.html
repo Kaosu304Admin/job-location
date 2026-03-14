@@ -308,19 +308,51 @@
   }
 
   function cardItem(it){
-    const layout = it.layout_image_url || "";
-    return `
-      <div class="item" data-layout="${esc(layout)}">
-        <div class="info">
-          <div><span class="tag">${WORDS.labelLocation}</span><span class="k">${esc(it.location_code)}</span></div>
-          <div><span class="tag">${WORDS.labelCustomer}</span>${esc(it.customer_code)}</div>
-          <div><span class="tag">${WORDS.labelPart}</span>${esc(it.part_name)}</div>
-        </div>
-        ${layout ? `<div class="thumb"><img src="${esc(layout)}" alt="layout"></div>` : ``}
-      </div>
-    `;
-  }
+  const layout = it.layout_image_url || "";
 
+  // ✅ ตอนนี้เรายัง "ทดสอบก่อน" โดยให้ WI ใส่ไว้เป็นค่าว่างหรือใส่ URL ตรง ๆ ก็ได้
+  // ถ้าคุณยังไม่ดึงจากชีท ให้ลองใส่ URL ของงานตัวอย่างไว้ก่อน (ชั่วคราว)
+  // เช่น:
+  // const wiFront = "https://drive.google.com/uc?id=FILE_ID";
+  // แต่ถ้าใน it มีค่าอยู่แล้วในอนาคต เราจะเปลี่ยนเป็น it.wi_front_url ได้
+  const wiFront = it.wi_front_url || "";       // อนาคตดึงจากชีท
+  const wiBack  = it.wi_back_url  || "";       // อนาคตดึงจากชีท
+  const label   = it.label_image_url || "";    // อนาคตดึงจากชีท
+
+  return `
+    <div class="item" data-layout="${esc(layout)}">
+      <div class="info">
+        <div>
+          <span class="tag">${WORDS.labelLocation}</span>
+          <span class="k">${esc(it.location_code)}</span>
+        </div>
+
+        <div>
+          <span class="tag">${WORDS.labelCustomer}</span>
+          ${esc(it.customer_code)}
+        </div>
+
+        <div>
+          <span class="tag">${WORDS.labelPart}</span>
+          ${esc(it.part_name)}
+        </div>
+
+        <!-- ✅ WI buttons อยู่ใน card เดียวกัน -->
+        <div class="wi-actions" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+          ${wiFront ? `<button type="button" onclick="openModal('${esc(wiFront)}')">WI หน้าเครื่อง</button>` : ``}
+          ${wiBack  ? `<button type="button" onclick="openModal('${esc(wiBack)}')">WI หลังเครื่อง</button>` : ``}
+          ${label   ? `<button type="button" class="secondary" onclick="openModal('${esc(label)}')">สติ๊กเกอร์</button>` : ``}
+        </div>
+
+      </div>
+
+      ${layout ? `
+      <div class="thumb">
+        <img src="${esc(layout)}" alt="layout">
+      </div>` : ``}
+    </div>
+  `;
+}
   function renderGrid(items){
     if(!items || !items.length) return `<p class="muted">${WORDS.notFound}</p>`;
     return `<div class="grid">${items.map(cardItem).join("")}</div>`;
