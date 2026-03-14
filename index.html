@@ -394,7 +394,7 @@ function reloadData(){loadList()}
 
 async function loadList(){
   showLoading();
-  const r=await jsonp(API_BASE+"?action=list&limit=1000");
+  const r=await jsonp(API_BASE+"?action=list&limit=");
   ALL_ITEMS=r.items||[];
   updateSummary(ALL_ITEMS);
   setFilter("all");
