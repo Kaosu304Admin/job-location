@@ -37,7 +37,7 @@ body{
 .grid{
   display:grid;
   gap:14px;
-  grid-template-columns:repeat(auto-fit,minmax(340px,1fr));
+  grid-template-columns:repeat(auto-fit,minmax(360px,1fr));
 }
 
 /* ===== ITEM CARD ===== */
@@ -53,8 +53,32 @@ body{
   box-shadow:0 18px 45px rgba(0,0,0,.16);
 }
 
+/* body layout: left image + right info */
 .item-body{
+  display:flex;
+  gap:14px;
   padding:14px;
+}
+
+.layout-left{
+  width:160px;
+  min-width:160px;
+}
+.layout-left img{
+  width:100%;
+  height:140px;
+  object-fit:cover;
+  border-radius:14px;
+  cursor:pointer;
+  display:block;
+  box-shadow:0 10px 24px rgba(0,0,0,.10);
+}
+
+.info{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
 }
 
 .tag{
@@ -67,21 +91,13 @@ body{
   font-size:12px;
   margin-right:6px;
 }
-.k{font-weight:600}
+.k{font-weight:700}
 
-/* ===== LAYOUT IMAGE ===== */
-.layout-box{
-  margin-top:10px;
-}
-.layout-box img{
-  width:100%;
-  max-height:160px;
-  object-fit:cover;
-  border-radius:12px;
-  cursor:pointer;
+.meta-row{
+  line-height:1.35;
 }
 
-/* ===== WI ACTION BAR ===== */
+/* ===== WI ACTION BAR (bottom) ===== */
 .wi-bar{
   display:flex;
   gap:8px;
@@ -98,10 +114,16 @@ body{
   font-size:14px;
   background:var(--brand-red);
   color:#fff;
+  transition:.15s ease;
 }
+.wi-bar button:hover{ background:var(--brand-red-dark); }
 .wi-bar button.secondary{
   background:#eef2ff;
   color:var(--brand-blue);
+  border:1px solid #c7d2fe;
+}
+.wi-bar button.secondary:hover{
+  background:#e0e7ff;
 }
 
 /* ===== MODAL ===== */
@@ -127,6 +149,29 @@ body{
   object-fit:contain;
   display:block;
 }
+
+/* ===== Mobile ===== */
+@media (max-width:640px){
+  .grid{grid-template-columns:1fr}
+
+  .item-body{
+    gap:12px;
+  }
+  .layout-left{
+    width:120px;
+    min-width:120px;
+  }
+  .layout-left img{
+    height:120px;
+    border-radius:12px;
+  }
+  .wi-bar{
+    flex-direction:column;
+  }
+  .wi-bar button{
+    width:100%;
+  }
+}
 </style>
 </head>
 
@@ -134,7 +179,7 @@ body{
 <div class="wrap">
 
 <div class="card">
-  <b>ทดสอบการ์ดงาน (Layout + WI แถบล่าง)</b>
+  <b>ทดสอบการ์ดงาน (Layout ซ้าย + WI แถบล่าง)</b>
   <div id="list" class="grid" style="margin-top:12px"></div>
 </div>
 
@@ -143,22 +188,24 @@ body{
 <!-- MODAL -->
 <div id="modal" class="modal" onclick="closeModal()">
   <div class="modal-content" onclick="event.stopPropagation()">
-    <img id="modalImg">
+    <img id="modalImg" alt="preview">
   </div>
 </div>
 
 <script>
 // ===== DATA ตัวอย่าง (แทน API ก่อน) =====
+// * เปลี่ยน layout_image_url ให้เป็น "รูปผังจริง" ของคุณ
 const DATA = [
   {
     location_code:"A1-01",
     customer_code:"HONDA",
     part_name:"F5111/5112",
 
-    // ✅ รูปผัง (Layout จริง)
-    layout_image_url:"https://drive.google.com/thumbnail?id=1YmLAYOUTID_EXAMPLE&sz=w1200",
+    // ✅ ใส่รูป Layout (ผัง) จริงตรงนี้
+    // ตัวอย่างเป็น placeholder: ให้เปลี่ยนเป็น ID รูปผังของคุณ
+    layout_image_url:"https://drive.google.com/thumbnail?id=1REPLACE_WITH_LAYOUT_IMAGE_ID&sz=w1200",
 
-    // ✅ WI
+    // ✅ WI / Sticker
     wi_front_url:"https://drive.google.com/thumbnail?id=1YM-FyMyDJYoHs1-T8laNyvBl__8PWrSM&sz=w2000",
     wi_back_url:"https://drive.google.com/thumbnail?id=1L4wxNr5lyvqfAuKTZ7w6RgCkkyEvLWAs&sz=w2000",
     label_image_url:"https://drive.google.com/thumbnail?id=12EfYfvErhbsq114RSNONSbMKjIumuuyg&sz=w2000"
@@ -166,34 +213,38 @@ const DATA = [
 ];
 
 function cardItem(it){
+  const layout = it.layout_image_url || "";
+  const wiFront = it.wi_front_url || "";
+  const wiBack  = it.wi_back_url || "";
+  const sticker = it.label_image_url || "";
+
   return `
     <div class="item">
       <div class="item-body">
-        <div><span class="tag">ตำแหน่ง</span><span class="k">${it.location_code}</span></div>
-        <div><span class="tag">ลูกค้า</span>${it.customer_code}</div>
-        <div><span class="tag">งาน</span>${it.part_name}</div>
+        <div class="layout-left">
+          <img src="${layout}" alt="layout" onclick="openModal('${layout}')">
+        </div>
 
-        <div class="layout-box">
-          <img src="${it.layout_image_url}"
-               onclick="openModal('${it.layout_image_url}')"
-               alt="layout">
+        <div class="info">
+          <div class="meta-row"><span class="tag">ตำแหน่ง</span><span class="k">${it.location_code}</span></div>
+          <div class="meta-row"><span class="tag">ลูกค้า</span>${it.customer_code}</div>
+          <div class="meta-row"><span class="tag">งาน</span>${it.part_name}</div>
         </div>
       </div>
 
       <div class="wi-bar">
-        <button onclick="event.stopPropagation(); openModal('${it.wi_front_url}')">WI หน้าเครื่อง</button>
-        <button onclick="event.stopPropagation(); openModal('${it.wi_back_url}')">WI หลังเครื่อง</button>
-        <button class="secondary" onclick="event.stopPropagation(); openModal('${it.label_image_url}')">สติ๊กเกอร์</button>
+        <button onclick="event.stopPropagation(); openModal('${wiFront}')">WI หน้าเครื่อง</button>
+        <button onclick="event.stopPropagation(); openModal('${wiBack}')">WI หลังเครื่อง</button>
+        <button class="secondary" onclick="event.stopPropagation(); openModal('${sticker}')">สติ๊กเกอร์</button>
       </div>
     </div>
   `;
 }
 
-// render
 document.getElementById("list").innerHTML = DATA.map(cardItem).join("");
 
-// modal
 function openModal(src){
+  if(!src) return;
   document.getElementById("modalImg").src = src;
   document.getElementById("modal").style.display = "flex";
 }
