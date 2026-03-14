@@ -97,6 +97,71 @@
     }
     .modal-content{background:#fff;border-radius:14px;padding:10px;max-width:95vw;max-height:95vh}
     .modal-content img{width:100%;max-height:90vh;object-fit:contain;border-radius:10px;display:block}
+    /* ================= WI CARD (Luxury Minimal) ================= */
+.wi-card{
+  background:#fff;
+  border-radius:18px;
+  padding:18px;
+  margin:18px 0;
+  border:1px solid rgba(17,24,39,.06);
+  box-shadow:
+    0 16px 40px rgba(0,0,0,.10),
+    0 4px 12px rgba(0,0,0,.06);
+  transition:transform .22s ease, box-shadow .22s ease;
+}
+
+.wi-card:hover{
+  transform:translateY(-2px);
+  box-shadow:
+    0 22px 55px rgba(0,0,0,.14),
+    0 6px 16px rgba(0,0,0,.08);
+}
+
+.wi-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
+}
+
+.wi-title{
+  font-size:20px;
+  font-weight:800;
+  letter-spacing:.2px;
+}
+
+.wi-sub{
+  font-size:12px;
+  color:var(--muted);
+}
+
+.wi-info{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin:12px 0 16px;
+}
+
+.wi-info span{
+  display:block;
+  font-size:12px;
+  color:var(--muted);
+}
+
+.wi-info b{
+  font-size:15px;
+}
+
+.wi-actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.wi-actions button{
+  flex:1;
+}
+/* ============================================================ */
   </style>
 </head>
 
@@ -132,6 +197,31 @@
 
   <div id="status" class="muted"></div>
   <div id="out" class="card" style="display:none"></div>
+  <!-- ================= WI CARD : TEST 1 PART ================= -->
+<div class="wi-card" id="wiTestCard">
+  <div class="wi-header">
+    <div class="wi-title">F5111/5112</div>
+    <div class="wi-sub">Work Instruction</div>
+  </div>
+
+  <div class="wi-info">
+    <div>
+      <span>📦 แพ็คกิ้ง</span>
+      <b>55x150G0</b>
+    </div>
+    <div>
+      <span>🏷️ สีสติ๊กเกอร์</span>
+      <b>สีฟ้า</b>
+    </div>
+  </div>
+
+  <div class="wi-actions">
+    <button type="button" onclick="openModal('https://drive.google.com/file/d/1YM-FyMyDJYoHs1-T8laNyvBl__8PWrSM/view?usp=drive_link')">WI หน้าเครื่อง</button>
+    <button type="button" onclick="openModal('https://drive.google.com/file/d/1L4wxNr5lyvqfAuKTZ7w6RgCkkyEvLWAs/view?usp=drive_link')">WI หลังเครื่อง</button>
+    <button type="button" class="secondary" onclick="openModal('https://drive.google.com/file/d/12EfYfvErhbsq114RSNONSbMKjIumuuyg/view?usp=drive_link')">ดูสติ๊กเกอร์</button>
+  </div>
+</div>
+<!-- ========================================================== -->
 
   <div class="card">
     <div class="row" style="justify-content:space-between;align-items:center">
