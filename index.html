@@ -1,293 +1,383 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ระบบค้นหาตำแหน่งงาน</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ระบบระบุตำแหน่งงาน</title>
 
-<style>
-:root{
-  --brand:#c1121f;
-  --brand-dark:#9b0f18;
-  --blue:#1d4ed8;
-  --green:#16a34a;
-  --red:#dc2626;
-  --bg:#f8fafc;
-  --border:#e5e7eb;
-  --text:#111827;
-  --muted:#6b7280;
-}
+  <style>
+    :root{
+      --brand-red:#c1121f;
+      --brand-red-dark:#9b0f18;
+      --brand-blue:#1d4ed8;
 
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:system-ui,-apple-system,Segoe UI,Arial;
-  background:var(--bg);
-  color:var(--text);
-}
-.wrap{max-width:1200px;margin:auto;padding:16px}
+      --bg:#f8fafc;
+      --card:#ffffff;
+      --border:#e5e7eb;
+      --text:#111827;
+      --muted:#6b7280;
+    }
 
-/* ===== HEADER ===== */
-.header{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  margin-bottom:14px;
-}
-.logo{
-  width:42px;height:42px;
-  border-radius:10px;
-  background:#fff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  box-shadow:0 6px 18px rgba(0,0,0,.12);
-}
-.logo img{
-  max-width:80%;
-  max-height:80%;
-}
-.title{
-  font-size:20px;
-  font-weight:800;
-}
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Arial;
+      background:var(--bg);
+      color:var(--text);
+    }
+    .wrap{max-width:1100px;margin:0 auto;padding:14px}
 
-/* ===== SEARCH ===== */
-.search-card{
-  background:#fff;
-  border-radius:18px;
-  padding:14px;
-  margin-bottom:16px;
-  box-shadow:0 10px 30px rgba(0,0,0,.08);
-}
-.row{display:flex;gap:8px;flex-wrap:wrap}
-input,button{
-  height:46px;
-  border-radius:12px;
-  padding:0 14px;
-  font-size:15px;
-}
-input{
-  flex:1;
-  border:1px solid var(--border);
-}
-button.primary{
-  background:var(--brand);
-  color:#fff;
-  border:none;
-}
-button.primary:hover{background:var(--brand-dark)}
-button.secondary{
-  background:#eef2ff;
-  color:var(--blue);
-  border:none;
-}
+    /* Header */
+    .header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+    .logo-box{
+      width:40px;height:40px;border-radius:10px;background:#fff;border:1px solid var(--border);
+      display:flex;align-items:center;justify-content:center;overflow:hidden;flex:0 0 auto;
+    }
+    .logo-box img{max-width:100%;max-height:100%;object-fit:contain;display:block}
+    h1{font-size:18px;margin:0}
+    .subtitle{font-size:13px;color:var(--muted)}
 
-/* ===== GRID ===== */
-.grid{
-  display:grid;
-  gap:18px;
-  grid-template-columns:repeat(auto-fit,minmax(360px,1fr));
-}
+    /* Cards / Inputs */
+    .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px;margin:12px 0}
+    .row{display:flex;gap:8px;flex-wrap:wrap}
 
-/* ===== CARD ===== */
-.item{
-  background:#fff;
-  border-radius:20px;
-  border:1px solid var(--border);
-  overflow:hidden;
-  transition:
-    transform .25s ease,
-    box-shadow .25s ease;
-  cursor:pointer;
-}
-.item:hover{
-  transform:translateY(-6px);
-  box-shadow:0 22px 55px rgba(0,0,0,.18);
-}
-.item.active{
-  box-shadow:0 26px 65px rgba(193,18,31,.35);
-  border-color:var(--brand);
-}
+    input,button{height:44px;border-radius:12px;padding:0 12px;font-size:15px}
+    input{flex:1;min-width:200px;border:1px solid var(--border);outline:none}
+    input:focus{border-color:rgba(29,78,216,.45);box-shadow:0 0 0 3px rgba(29,78,216,.12)}
 
-.item-body{
-  display:flex;
-  gap:14px;
-  padding:16px;
-}
+    button{background:var(--brand-red);color:#fff;border:none;cursor:pointer}
+    button:hover{background:var(--brand-red-dark)}
+    button.secondary{background:#eef2ff;color:var(--brand-blue);border:1px solid #c7d2fe}
+    button:disabled{opacity:.5;cursor:not-allowed}
 
-/* ===== INFO ===== */
-.info{flex:1}
-.badge{
-  display:inline-block;
-  padding:3px 12px;
-  border-radius:999px;
-  font-size:12px;
-  margin-right:6px;
-  background:#eef2ff;
-  color:var(--blue);
-}
-.badge.ok{background:#dcfce7;color:var(--green)}
-.badge.warn{background:#fee2e2;color:var(--red)}
+    .muted{font-size:13px;color:var(--muted);line-height:1.4}
 
-.field{margin:6px 0}
-.missing{color:var(--red);font-weight:600}
+    /* Grid + Item Card */
+    .grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));}
 
-/* ===== LAYOUT ===== */
-.layout{
-  width:180px;
-}
-.layout img{
-  width:100%;
-  height:150px;
-  object-fit:cover;
-  border-radius:14px;
-  box-shadow:0 10px 24px rgba(0,0,0,.12);
-}
+    .item{
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:14px;
+      background:#fff;
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      cursor:pointer;
+      transition:transform .2s ease, box-shadow .2s ease, background .12s ease;
+      box-shadow:0 10px 28px rgba(0,0,0,.08), 0 2px 6px rgba(0,0,0,.04);
+    }
+    .item:hover{
+      background:#fafafa;
+      transform:translateY(-2px);
+      box-shadow:0 16px 40px rgba(0,0,0,.12), 0 4px 10px rgba(0,0,0,.06);
+    }
+    .item .info{flex:1}
+    .item .thumb{width:120px;min-width:120px}
+    .item .thumb img{width:100%;max-height:90px;object-fit:cover;border-radius:10px;display:block}
 
-/* ===== WI BAR ===== */
-.wi-bar{
-  display:flex;
-  gap:10px;
-  padding:12px;
-  border-top:1px solid var(--border);
-  background:#fafafa;
-}
-.wi-bar button{
-  flex:1;
-  height:42px;
-  border-radius:12px;
-  border:none;
-  font-size:14px;
-}
-.wi-bar button.on{
-  background:var(--brand);
-  color:#fff;
-}
-.wi-bar button.off{
-  background:#e5e7eb;
-  color:#6b7280;
-}
+    .tag{
+      display:inline-block;padding:2px 10px;border-radius:999px;
+      background:#eef2ff;border:1px solid #c7d2fe;color:var(--brand-blue);
+      font-size:12px;margin-right:6px;
+    }
+    .k{font-weight:600}
 
-/* ===== MODAL ===== */
-.modal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.75);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:9999;
-}
-.modal img{
-  max-width:95vw;
-  max-height:90vh;
-}
+    @media (max-width:640px){
+      .grid{grid-template-columns:1fr}
+      .item{align-items:center}
+      .item .thumb{width:90px;min-width:90px}
+      button{flex:1}
+    }
 
-/* ===== MOBILE ===== */
-@media (max-width:640px){
-  .grid{grid-template-columns:1fr}
-  .item-body{flex-direction:column-reverse}
-  .layout{width:100%}
-  .layout img{height:200px}
-  .wi-bar{flex-direction:column}
-}
-</style>
+    /* Modal */
+    .modal{
+      position:fixed;inset:0;background:rgba(0,0,0,.7);
+      display:none;align-items:center;justify-content:center;z-index:9999;
+    }
+    .modal-content{background:#fff;border-radius:14px;padding:10px;max-width:95vw;max-height:95vh}
+    .modal-content img{width:100%;max-height:90vh;object-fit:contain;border-radius:10px;display:block}
+
+    /* ===== WI CARD (Luxury Minimal) ===== */
+    .wi-card{
+      background:#fff;border-radius:18px;padding:18px;margin:18px 0;
+      border:1px solid rgba(17,24,39,.06);
+      box-shadow:0 16px 40px rgba(0,0,0,.10), 0 4px 12px rgba(0,0,0,.06);
+      transition:transform .22s ease, box-shadow .22s ease;
+    }
+    .wi-card:hover{
+      transform:translateY(-2px);
+      box-shadow:0 22px 55px rgba(0,0,0,.14), 0 6px 16px rgba(0,0,0,.08);
+    }
+    .wi-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    .wi-title{font-size:20px;font-weight:800}
+    .wi-sub{font-size:12px;color:var(--muted)}
+    .wi-info{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0 16px}
+    .wi-info span{font-size:12px;color:var(--muted)}
+    .wi-info b{font-size:15px}
+    .wi-actions{display:flex;gap:10px;flex-wrap:wrap}
+    .wi-actions button{flex:1}
+
+    /* ===== GLOBAL LOADING ===== */
+    .loading-overlay{
+      position:fixed;inset:0;background:rgba(255,255,255,.85);
+      backdrop-filter:blur(4px);
+      display:flex;align-items:center;justify-content:center;z-index:10000;
+    }
+    .loading-box{
+      background:#fff;padding:28px 36px;border-radius:20px;text-align:center;
+      box-shadow:0 20px 50px rgba(0,0,0,.15), 0 6px 14px rgba(0,0,0,.08);
+    }
+    .loading-logo{width:64px;margin-bottom:12px;animation:logo-bounce 1.2s infinite ease-in-out}
+    @keyframes logo-bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+    .spinner{
+      width:36px;height:36px;border:4px solid #e5e7eb;border-top:4px solid var(--brand-red);
+      border-radius:50%;margin:12px auto;animation:spin 1s linear infinite;
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .loading-text{font-size:14px;color:#374151;margin-top:6px}
+  </style>
 </head>
 
 <body>
 <div class="wrap">
 
-<!-- HEADER -->
-<div class="header">
-  <div class="logo">
-    <img src="assets/logo.png" alt="Company Logo">
+  <div class="header">
+    <div class="logo-box">
+      <img src="assets/logo.png" alt="Company Logo">
+    </div>
+    <div>
+      <h1 id="appTitle"></h1>
+      <div class="subtitle" id="appSubtitle"></div>
+    </div>
   </div>
-  <div class="title">ระบบค้นหาตำแหน่งงาน</div>
+
+  <div class="card">
+    <div class="row">
+      <input id="q">
+      <button id="btnSearch"></button>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <input id="loc">
+      <button class="secondary" id="btnLoc"></button>
+      <input id="cus">
+      <button class="secondary" id="btnCus"></button>
+    </div>
+    <div class="muted" style="margin-top:10px">
+      • หากยังไม่ค้นหา ระบบจะแสดงรายการฐานข้อมูลด้านล่าง<br>
+      • สามารถค้นหาได้ทั้ง “ชื่องาน / ตำแหน่งจัดเก็บ / ลูกค้า”
+    </div>
+  </div>
+
+  <div id="status" class="muted"></div>
+  <div id="out" class="card" style="display:none"></div>
+
+  <!-- ===== WI CARD : TEST 1 PART ===== -->
+  <div class="wi-card">
+    <div class="wi-header">
+      <div class="wi-title">F5111/5112</div>
+      <div class="wi-sub">Work Instruction</div>
+    </div>
+    <div class="wi-info">
+      <div><span>📦 แพ็คกิ้ง</span><b>55x150G0</b></div>
+      <div><span>🏷️ สีสติ๊กเกอร์</span><b>สีฟ้า</b></div>
+    </div>
+    <div class="wi-actions">
+      <!-- แก้ URL ทั้ง 3 จุดนี้เป็น Direct Image URL (uc?id=...) -->
+      <button onclick="openModal('PASTE_FRONT_WI_URL_HERE')">WI หน้าเครื่อง</button>
+      <button onclick="openModal('PASTE_BACK_WI_URL_HERE')">WI หลังเครื่อง</button>
+      <button class="secondary" onclick="openModal('PASTE_LABEL_URL_HERE')">ดูสติ๊กเกอร์</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="row" style="justify-content:space-between;align-items:center">
+      <b id="allItemsTitle"></b>
+      <button id="btnMore" class="secondary"></button>
+    </div>
+    <div id="list" class="grid" style="margin-top:10px"></div>
+  </div>
+
 </div>
 
-<!-- SEARCH -->
-<div class="search-card">
-  <div class="row">
-    <input id="q" placeholder="ค้นหางาน / ลูกค้า / ตำแหน่ง">
-    <button class="primary" onclick="doSearch()">ค้นหา</button>
-    <button class="secondary" onclick="loadList()">แสดงทั้งหมด</button>
+<!-- ===== IMAGE MODAL ===== -->
+<div id="layoutModal" class="modal">
+  <div class="modal-content">
+    <img id="modalImage" src="" alt="image">
   </div>
 </div>
 
-<!-- RESULT -->
-<div id="list" class="grid"></div>
-
-</div>
-
-<!-- MODAL -->
-<div id="modal" class="modal" onclick="this.style.display='none'">
-  <img id="modalImg">
+<!-- ===== GLOBAL LOADING ===== -->
+<div id="globalLoading" class="loading-overlay" style="display:none">
+  <div class="loading-box">
+    <img src="assets/logo.png" class="loading-logo">
+    <div class="spinner"></div>
+    <div class="loading-text">กำลังโหลดข้อมูล...</div>
+  </div>
 </div>
 
 <script>
-const API_BASE="https://script.google.com/macros/s/AKfycbyJwO_mlyCF3ZOT_N2GPcLzUYX1vDOPNPsZAPwKz9mFbUEA4TpaDR4m3uTi362mwfqJMA/exec";
+  const WORDS = {
+    appTitle:"ระบบระบุตำแหน่งงาน",
+    subtitle:"ค้นหาตำแหน่งจัดเก็บ • ชื่องาน • ลูกค้า",
+    placeholderSearch:"ค้นหาชื่องาน / ตำแหน่งจัดเก็บ / ลูกค้า",
+    placeholderLocation:"ตำแหน่งจัดเก็บ (เช่น A1-01)",
+    placeholderCustomer:"รหัสลูกค้า",
+    btnSearch:"ค้นหา",
+    btnLocation:"ดูตำแหน่งจัดเก็บ",
+    btnCustomer:"ดูลูกค้า",
+    btnMore:"แสดงเพิ่มเติม",
+    labelLocation:"ตำแหน่งจัดเก็บ",
+    labelCustomer:"ลูกค้า",
+    labelPart:"ชื่องาน",
+    allItems:"รายการทั้งหมด",
+    loading:"กำลังโหลดข้อมูล...",
+    notFound:"ไม่พบข้อมูล"
+  };
 
-function jsonp(url){
-  return new Promise(res=>{
-    const cb="cb_"+Math.random().toString(36).slice(2);
-    window[cb]=d=>{delete window[cb];s.remove();res(d)};
-    const s=document.createElement("script");
-    s.src=url+(url.includes("?")?"&":"?")+"callback="+cb;
-    document.body.appendChild(s);
-  });
-}
-const ok=v=>v && v!=="#N/A";
+  const API_BASE = "https://script.google.com/macros/s/AKfycbyh1nb5-K1oI5Sa9qeaVirBfj_ent1OW0j8Mzpvyk_JOFQKWWwyut2A_GWykkTA8fsBvA/exec";
 
-function card(it){
-  const hasWI = ok(it.wi_front_url)||ok(it.wi_back_url)||ok(it.label_image_url);
-  return `
-  <div class="item" onclick="setActive(this)">
-    <div class="item-body">
-      <div class="info">
-        <div class="field">
-          <span class="badge">${it.location_code}</span>
-          <span class="badge ${hasWI?'ok':'warn'}">
-            ${hasWI?'ข้อมูลพร้อม':'ยังไม่ครบ WI'}
-          </span>
+  const el = {
+    appTitle: document.getElementById("appTitle"),
+    appSubtitle: document.getElementById("appSubtitle"),
+    q: document.getElementById("q"),
+    loc: document.getElementById("loc"),
+    cus: document.getElementById("cus"),
+    btnSearch: document.getElementById("btnSearch"),
+    btnLoc: document.getElementById("btnLoc"),
+    btnCus: document.getElementById("btnCus"),
+    btnMore: document.getElementById("btnMore"),
+    allItemsTitle: document.getElementById("allItemsTitle"),
+    status: document.getElementById("status"),
+    out: document.getElementById("out"),
+    list: document.getElementById("list"),
+    layoutModal: document.getElementById("layoutModal"),
+    modalImage: document.getElementById("modalImage")
+  };
+
+  function applyWords(){
+    el.appTitle.textContent = WORDS.appTitle;
+    el.appSubtitle.textContent = WORDS.subtitle;
+    el.q.placeholder = WORDS.placeholderSearch;
+    el.loc.placeholder = WORDS.placeholderLocation;
+    el.cus.placeholder = WORDS.placeholderCustomer;
+    el.btnSearch.textContent = WORDS.btnSearch;
+    el.btnLoc.textContent = WORDS.btnLocation;
+    el.btnCus.textContent = WORDS.btnCustomer;
+    el.btnMore.textContent = WORDS.btnMore;
+    el.allItemsTitle.textContent = WORDS.allItems;
+  }
+
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, m => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[m]));
+
+  let offset = 0;
+  const limit = 50;
+
+  function jsonp(url){
+    return new Promise((resolve, reject) => {
+      const cb = "cb_" + Math.random().toString(36).slice(2);
+      const script = document.createElement("script");
+      window[cb] = (data) => { delete window[cb]; script.remove(); resolve(data); };
+      script.src = url + (url.includes("?") ? "&" : "?") + "callback=" + cb;
+      script.onerror = () => { delete window[cb]; script.remove(); reject(new Error("JSONP load failed")); };
+      document.body.appendChild(script);
+    });
+  }
+
+  function showLoading(){ document.getElementById("globalLoading").style.display = "flex"; }
+  function hideLoading(){ document.getElementById("globalLoading").style.display = "none"; }
+
+  function openModal(src){
+    if(!src) return;
+    el.modalImage.src = src;
+    el.layoutModal.style.display = "flex";
+  }
+  function closeModal(){
+    el.layoutModal.style.display = "none";
+    el.modalImage.src = "";
+  }
+  el.layoutModal.addEventListener("click", closeModal);
+  el.layoutModal.querySelector(".modal-content").addEventListener("click", (e)=>e.stopPropagation());
+
+  function showOut(html){
+    el.out.style.display = "block";
+    el.out.innerHTML = html;
+    el.out.scrollIntoView({behavior:"smooth", block:"start"});
+  }
+
+  function cardItem(it){
+    const layout = it.layout_image_url || "";
+    return `
+      <div class="item" data-layout="${esc(layout)}">
+        <div class="info">
+          <div><span class="tag">${WORDS.labelLocation}</span><span class="k">${esc(it.location_code)}</span></div>
+          <div><span class="tag">${WORDS.labelCustomer}</span>${esc(it.customer_code)}</div>
+          <div><span class="tag">${WORDS.labelPart}</span>${esc(it.part_name)}</div>
         </div>
-        <div class="field">ลูกค้า: <b>${it.customer_code}</b></div>
-        <div class="field">งาน: <b>${it.part_name}</b></div>
-        <div class="field">แพ็ค: ${ok(it.packing_type)?it.packing_type:`<span class="missing">ยังไม่ได้ใส่</span>`}</div>
-        <div class="field">สติ๊กเกอร์: ${ok(it.label_color)?it.label_color:`<span class="missing">ยังไม่ได้ใส่</span>`}</div>
+        ${layout ? `<div class="thumb"><img src="${esc(layout)}" alt="layout"></div>` : ``}
       </div>
-      <div class="layout">
-        ${ok(it.layout_image_url)?`<img src="${it.layout_image_url}" onclick="openModal('${it.layout_image_url}')">`:``}
-      </div>
-    </div>
-    <div class="wi-bar">
-      <button class="${ok(it.wi_front_url)?'on':'off'}" onclick="${ok(it.wi_front_url)?`openModal('${it.wi_front_url}')`:''}">WI หน้า</button>
-      <button class="${ok(it.wi_back_url)?'on':'off'}" onclick="${ok(it.wi_back_url)?`openModal('${it.wi_back_url}')`:''}">WI หลัง</button>
-      <button class="${ok(it.label_image_url)?'on':'off'}" onclick="${ok(it.label_image_url)?`openModal('${it.label_image_url}')`:''}">สติ๊กเกอร์</button>
-    </div>
-  </div>`;
-}
+    `;
+  }
 
-function setActive(el){
-  document.querySelectorAll(".item").forEach(i=>i.classList.remove("active"));
-  el.classList.add("active");
-}
+  function renderGrid(items){
+    if(!items || !items.length) return `<p class="muted">${WORDS.notFound}</p>`;
+    return `<div class="grid">${items.map(cardItem).join("")}</div>`;
+  }
 
-async function loadList(){
-  const r=await jsonp(API_BASE+"?action=list&limit=100");
-  document.getElementById("list").innerHTML=r.items.map(card).join("");
-}
-async function doSearch(){
-  const q=document.getElementById("q").value.trim();
-  if(!q) return loadList();
-  const r=await jsonp(API_BASE+"?action=search&q="+encodeURIComponent(q));
-  document.getElementById("list").innerHTML=r.results.map(card).join("");
-}
-function openModal(src){
-  document.getElementById("modalImg").src=src;
-  document.getElementById("modal").style.display="flex";
-}
-loadList();
+  document.addEventListener("click", (e) => {
+    const item = e.target.closest(".item[data-layout]");
+    if (!item) return;
+    const src = item.getAttribute("data-layout");
+    if (src) openModal(src);
+  });
+
+  el.btnSearch.onclick = async () => {
+    const q = el.q.value.trim();
+    if(!q) return;
+    showLoading();
+    try{
+      const data = await jsonp(`${API_BASE}?action=search&q=${encodeURIComponent(q)}`);
+      showOut(renderGrid(data.results));
+    } finally { hideLoading(); }
+  };
+
+  el.btnLoc.onclick = async () => {
+    const code = el.loc.value.trim();
+    if(!code) return;
+    showLoading();
+    try{
+      const data = await jsonp(`${API_BASE}?action=location&code=${encodeURIComponent(code)}`);
+      showOut(renderGrid(data.items));
+    } finally { hideLoading(); }
+  };
+
+  el.btnCus.onclick = async () => {
+    const code = el.cus.value.trim();
+    if(!code) return;
+    showLoading();
+    try{
+      const data = await jsonp(`${API_BASE}?action=customer&code=${encodeURIComponent(code)}`);
+      showOut(renderGrid((data.locations||[]).flatMap(g=>g.items||[])));
+    } finally { hideLoading(); }
+  };
+
+  async function loadMore(){
+    showLoading();
+    try{
+      const d = await jsonp(`${API_BASE}?action=list&limit=${limit}&offset=${offset}`);
+      offset += d.returned;
+      el.list.insertAdjacentHTML("beforeend", (d.items || []).map(cardItem).join(""));
+      if(d.returned < limit) el.btnMore.disabled = true;
+    } finally { hideLoading(); }
+  }
+
+  el.btnMore.onclick = loadMore;
+
+  showLoading();
+  applyWords();
+  loadMore();
 </script>
 </body>
 </html>
