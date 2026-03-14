@@ -90,6 +90,26 @@
       button{flex:1}
     }
 
+    /* Packing info */
+    .pack-grid{
+      margin-top:10px;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+    }
+
+    /* WI buttons inside card */
+    .wi-actions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
+    .wi-actions button{
+      flex:1;
+      min-width:140px;
+    }
+
     /* Modal */
     .modal{
       position:fixed;inset:0;background:rgba(0,0,0,.7);
@@ -98,27 +118,7 @@
     .modal-content{background:#fff;border-radius:14px;padding:10px;max-width:95vw;max-height:95vh}
     .modal-content img{width:100%;max-height:90vh;object-fit:contain;border-radius:10px;display:block}
 
-    /* ===== WI CARD (Luxury Minimal) ===== */
-    .wi-card{
-      background:#fff;border-radius:18px;padding:18px;margin:18px 0;
-      border:1px solid rgba(17,24,39,.06);
-      box-shadow:0 16px 40px rgba(0,0,0,.10), 0 4px 12px rgba(0,0,0,.06);
-      transition:transform .22s ease, box-shadow .22s ease;
-    }
-    .wi-card:hover{
-      transform:translateY(-2px);
-      box-shadow:0 22px 55px rgba(0,0,0,.14), 0 6px 16px rgba(0,0,0,.08);
-    }
-    .wi-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-    .wi-title{font-size:20px;font-weight:800}
-    .wi-sub{font-size:12px;color:var(--muted)}
-    .wi-info{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0 16px}
-    .wi-info span{font-size:12px;color:var(--muted)}
-    .wi-info b{font-size:15px}
-    .wi-actions{display:flex;gap:10px;flex-wrap:wrap}
-    .wi-actions button{flex:1}
-
-    /* ===== GLOBAL LOADING ===== */
+    /* Global Loading */
     .loading-overlay{
       position:fixed;inset:0;background:rgba(255,255,255,.85);
       backdrop-filter:blur(4px);
@@ -172,24 +172,6 @@
   <div id="status" class="muted"></div>
   <div id="out" class="card" style="display:none"></div>
 
-  <!-- ===== WI CARD : TEST 1 PART ===== -->
-  <div class="wi-card">
-    <div class="wi-header">
-      <div class="wi-title">F5111/5112</div>
-      <div class="wi-sub">Work Instruction</div>
-    </div>
-    <div class="wi-info">
-      <div><span>📦 แพ็คกิ้ง</span><b>55x150G0</b></div>
-      <div><span>🏷️ สีสติ๊กเกอร์</span><b>สีฟ้า</b></div>
-    </div>
-    <div class="wi-actions">
-      <!-- แก้ URL ทั้ง 3 จุดนี้เป็น Direct Image URL (uc?id=...) -->
-      <button onclick="openModal('PASTE_FRONT_WI_URL_HERE')">WI หน้าเครื่อง</button>
-      <button onclick="openModal('PASTE_BACK_WI_URL_HERE')">WI หลังเครื่อง</button>
-      <button class="secondary" onclick="openModal('PASTE_LABEL_URL_HERE')">ดูสติ๊กเกอร์</button>
-    </div>
-  </div>
-
   <div class="card">
     <div class="row" style="justify-content:space-between;align-items:center">
       <b id="allItemsTitle"></b>
@@ -200,17 +182,17 @@
 
 </div>
 
-<!-- ===== IMAGE MODAL ===== -->
+<!-- IMAGE MODAL -->
 <div id="layoutModal" class="modal">
-  <div class="modal-content">
+  <div class="modal-content" onclick="event.stopPropagation()">
     <img id="modalImage" src="" alt="image">
   </div>
 </div>
 
-<!-- ===== GLOBAL LOADING ===== -->
+<!-- GLOBAL LOADING -->
 <div id="globalLoading" class="loading-overlay" style="display:none">
   <div class="loading-box">
-    <img src="assets/logo.png" class="loading-logo">
+    <img src="assets/logo.png" class="loading-logo" alt="logo">
     <div class="spinner"></div>
     <div class="loading-text">กำลังโหลดข้อมูล...</div>
   </div>
@@ -230,6 +212,8 @@
     labelLocation:"ตำแหน่งจัดเก็บ",
     labelCustomer:"ลูกค้า",
     labelPart:"ชื่องาน",
+    labelPacking:"แพ็คกิ้ง",
+    labelStickerColor:"สีสติ๊กเกอร์",
     allItems:"รายการทั้งหมด",
     loading:"กำลังโหลดข้อมูล...",
     notFound:"ไม่พบข้อมูล"
@@ -268,13 +252,32 @@
     el.allItemsTitle.textContent = WORDS.allItems;
   }
 
+  // HTML escape (ปลอดภัย)
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, m => ({
     "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
   }[m]));
 
-  let offset = 0;
-  const limit = 50;
+  // แก้กรณีลิงก์ถูกแปลงเป็น &amp; ให้กลับเป็น & (สำคัญกับ drive thumbnail) [1](https://www.w3schools.com/html/html_entities.asp)[2](https://www.geeksforgeeks.org/html/how-to-display-html-tags-as-plain-text-in-html/)
+  function fixUrl(u){
+    return String(u ?? "").replace(/&amp;/g, "&").trim();
+  }
 
+  function showLoading(){ document.getElementById("globalLoading").style.display = "flex"; }
+  function hideLoading(){ document.getElementById("globalLoading").style.display = "none"; }
+
+  function openModal(src){
+    const url = fixUrl(src);
+    if(!url) return;
+    el.modalImage.src = url;
+    el.layoutModal.style.display = "flex";
+  }
+  function closeModal(){
+    el.layoutModal.style.display = "none";
+    el.modalImage.src = "";
+  }
+  el.layoutModal.addEventListener("click", closeModal);
+
+  // JSONP ต้องใช้ & ไม่ใช่ &amp; ใน JS URL [5](https://pantip.com/topic/43744802)[1](https://www.w3schools.com/html/html_entities.asp)
   function jsonp(url){
     return new Promise((resolve, reject) => {
       const cb = "cb_" + Math.random().toString(36).slice(2);
@@ -286,36 +289,42 @@
     });
   }
 
-  function showLoading(){ document.getElementById("globalLoading").style.display = "flex"; }
-  function hideLoading(){ document.getElementById("globalLoading").style.display = "none"; }
-
-  function openModal(src){
-    if(!src) return;
-    el.modalImage.src = src;
-    el.layoutModal.style.display = "flex";
-  }
-  function closeModal(){
-    el.layoutModal.style.display = "none";
-    el.modalImage.src = "";
-  }
-  el.layoutModal.addEventListener("click", closeModal);
-  el.layoutModal.querySelector(".modal-content").addEventListener("click", (e)=>e.stopPropagation());
-
   function showOut(html){
     el.out.style.display = "block";
     el.out.innerHTML = html;
     el.out.scrollIntoView({behavior:"smooth", block:"start"});
   }
 
+  // ✅ “การ์ดเดียวจบ” รวม WI + แพ็คกิ้ง + สีสติ๊กเกอร์
   function cardItem(it){
-    const layout = it.layout_image_url || "";
+    const layout = fixUrl(it.layout_image_url || "");
+    const packing = it.packing_type || "";
+    const stickerColor = it.label_color || "";
+
+    const wiFront = fixUrl(it.wi_front_url || "");
+    const wiBack  = fixUrl(it.wi_back_url || "");
+    const labelImg = fixUrl(it.label_image_url || "");
+
     return `
       <div class="item" data-layout="${esc(layout)}">
         <div class="info">
-          <div><span class="tag">${WORDS.labelLocation}</span><span class="k">${esc(it.location_code)}</span></div>
-          <div><span class="tag">${WORDS.labelCustomer}</span>${esc(it.customer_code)}</div>
-          <div><span class="tag">${WORDS.labelPart}</span>${esc(it.part_name)}</div>
+          <div><span class="tag">${WORDS.labelLocation}</span><span class="k">${esc(it.location_code || "")}</span></div>
+          <div><span class="tag">${WORDS.labelCustomer}</span>${esc(it.customer_code || "")}</div>
+          <div><span class="tag">${WORDS.labelPart}</span>${esc(it.part_name || "")}</div>
+
+          ${(packing || stickerColor) ? `
+          <div class="pack-grid">
+            ${packing ? `<div><span class="tag">${WORDS.labelPacking}</span><span class="k">${esc(packing)}</span></div>` : ``}
+            ${stickerColor ? `<div><span class="tag">${WORDS.labelStickerColor}</span><span class="k">${esc(stickerColor)}</span></div>` : ``}
+          </div>` : ``}
+
+          <div class="wi-actions">
+            ${wiFront ? `<button type="button" onclick="event.stopPropagation();openModal('${esc(wiFront)}')">WI หน้าเครื่อง</button>` : ``}
+            ${wiBack  ? `<button type="button" onclick="event.stopPropagation();openModal('${esc(wiBack)}')">WI หลังเครื่อง</button>` : ``}
+            ${labelImg ? `<button type="button" class="secondary" onclick="event.stopPropagation();openModal('${esc(labelImg)}')">สติ๊กเกอร์</button>` : ``}
+          </div>
         </div>
+
         ${layout ? `<div class="thumb"><img src="${esc(layout)}" alt="layout"></div>` : ``}
       </div>
     `;
@@ -326,6 +335,7 @@
     return `<div class="grid">${items.map(cardItem).join("")}</div>`;
   }
 
+  // คลิกการ์ด = เปิด layout (แต่ปุ่ม WI กันไว้แล้วด้วย stopPropagation)
   document.addEventListener("click", (e) => {
     const item = e.target.closest(".item[data-layout]");
     if (!item) return;
@@ -359,9 +369,14 @@
     showLoading();
     try{
       const data = await jsonp(`${API_BASE}?action=customer&code=${encodeURIComponent(code)}`);
-      showOut(renderGrid((data.locations||[]).flatMap(g=>g.items||[])));
+      // ถ้า API ของคุณคืนรูปแบบ locations แบบเดิม (มี items ย่อย)
+      const items = (data.locations || []).flatMap(g => g.items || []);
+      showOut(renderGrid(items));
     } finally { hideLoading(); }
   };
+
+  let offset = 0;
+  const limit = 50;
 
   async function loadMore(){
     showLoading();
