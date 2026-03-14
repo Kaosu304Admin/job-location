@@ -102,6 +102,14 @@
       min-width:140px;
     }
 
+    /* Packing info */
+    .pack-grid{
+      margin-top:10px;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+    }
+
     /* Modal */
     .modal{
       position:fixed;inset:0;background:rgba(0,0,0,.7);
@@ -174,7 +182,7 @@
 
 </div>
 
-<!-- IMAGE MODAL (ใช้เปิดทั้ง Layout/WI/Sticker) -->
+<!-- IMAGE MODAL -->
 <div id="layoutModal" class="modal">
   <div class="modal-content">
     <img id="modalImage" src="" alt="image">
@@ -204,12 +212,14 @@
     labelLocation:"ตำแหน่งจัดเก็บ",
     labelCustomer:"ลูกค้า",
     labelPart:"ชื่องาน",
+    labelPacking:"แพ็คกิ้ง",
+    labelStickerColor:"สีสติ๊กเกอร์",
     allItems:"รายการทั้งหมด",
     loading:"กำลังโหลดข้อมูล...",
     notFound:"ไม่พบข้อมูล"
   };
 
-  // IMPORTANT: ต้องเป็น URL /exec ของ Apps Script (ตัวเดียวกับที่คุณใช้ดึงข้อมูล)
+  // URL /exec ของ Apps Script
   const API_BASE = "https://script.google.com/macros/s/AKfycbyh1nb5-K1oI5Sa9qeaVirBfj_ent1OW0j8Mzpvyk_JOFQKWWwyut2A_GWykkTA8fsBvA/exec";
 
   const el = {
@@ -243,29 +253,13 @@
     el.allItemsTitle.textContent = WORDS.allItems;
   }
 
-  // Escape HTML (ปลอดภัย) — ไม่ต้องแก้ / ไม่เกี่ยวกับ /
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, m => ({
     "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
   }[m]));
 
-  // กันกรณีเอา URL ที่มี &amp; มาวางในชีท/ระบบ
+  // แก้ &amp; ให้เป็น & (รองรับลิงก์ drive thumbnail ที่บางทีถูกแปลง) [3](https://stackoverflow.com/questions/3541711/url-encode-sees-ampersand-as-amp-html-entity)[4](https://blog.teknkl.com/youre-probably-overusing-amp-in-links/)
   function fixUrl(u){
     return String(u ?? "").replace(/&amp;/g, "&").trim();
-  }
-
-  let offset = 0;
-  const limit = 50;
-
-  // JSONP (แก้ CORS) — ต้องใช้ & ไม่ใช่ &amp; [3](https://pantip.com/topic/43744802)[4](https://wukihow.com/th/299668/%E0%B8%A7%E0%B8%B4%E0%B8%98%E0%B8%B5%E0%B8%AA%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%87%E0%B8%A5%E0%B8%B4%E0%B8%87%E0%B8%84%E0%B9%8C%E0%B8%94%E0%B8%B2%E0%B8%A7%E0%B8%99%E0%B9%8C%E0%B9%82%E0%B8%AB%E0%B8%A5%E0%B8%94%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B9%81%E0%B8%8A%E0%B8%A3%E0%B9%8C%E0%B9%84%E0%B8%94%E0%B9%89%E0%B8%AA%E0%B8%B3%E0%B8%AB%E0%B8%A3%E0%B8%B1%E0%B8%9A%E0%B9%84%E0%B8%9F%E0%B8%A5%E0%B9%8C%E0%B8%9A%E0%B8%99-google-drive.html)
-  function jsonp(url){
-    return new Promise((resolve, reject) => {
-      const cb = "cb_" + Math.random().toString(36).slice(2);
-      const script = document.createElement("script");
-      window[cb] = (data) => { delete window[cb]; script.remove(); resolve(data); };
-      script.src = url + (url.includes("?") ? "&" : "?") + "callback=" + cb;
-      script.onerror = () => { delete window[cb]; script.remove(); reject(new Error("JSONP load failed")); };
-      document.body.appendChild(script);
-    });
   }
 
   function showLoading(){ document.getElementById("globalLoading").style.display = "flex"; }
@@ -284,39 +278,66 @@
   el.layoutModal.addEventListener("click", closeModal);
   el.layoutModal.querySelector(".modal-content").addEventListener("click", (e)=>e.stopPropagation());
 
+  // JSONP (แก้ CORS) ต้องใช้ & ไม่ใช่ &amp; [3](https://stackoverflow.com/questions/3541711/url-encode-sees-ampersand-as-amp-html-entity)[4](https://blog.teknkl.com/youre-probably-overusing-amp-in-links/)
+  function jsonp(url){
+    return new Promise((resolve, reject) => {
+      const cb = "cb_" + Math.random().toString(36).slice(2);
+      const script = document.createElement("script");
+      window[cb] = (data) => { delete window[cb]; script.remove(); resolve(data); };
+      script.src = url + (url.includes("?") ? "&" : "?") + "callback=" + cb;
+      script.onerror = () => { delete window[cb]; script.remove(); reject(new Error("JSONP load failed")); };
+      document.body.appendChild(script);
+    });
+  }
+
   function showOut(html){
     el.out.style.display = "block";
     el.out.innerHTML = html;
     el.out.scrollIntoView({behavior:"smooth", block:"start"});
   }
 
-  // ✅ Card งานใบเดียวรวม WI + Layout
+  // รวมการอ่าน key หลายชื่อ เพื่อกันกรณี API ใช้ชื่อ field ต่างกัน
+  function pick(it, keys){
+    for(const k of keys){
+      if(it && it[k] !== undefined && it[k] !== null && String(it[k]).trim() !== "") return it[k];
+    }
+    return "";
+  }
+
+  let offset = 0;
+  const limit = 50;
+
+  // ✅ Card งานใบเดียวครบ (ตำแหน่งจัดเก็บ + แพ็ค + สี + WI + Layout)
   function cardItem(it){
-    const layout = fixUrl(it.layout_image_url || "");
-    const wiFront = fixUrl(it.wi_front_url || "");
-    const wiBack  = fixUrl(it.wi_back_url  || "");
-    const label   = fixUrl(it.label_image_url || "");
+    const locationCode = pick(it, ["location_code","location","location_store","Location Store"]);
+    const customerCode = pick(it, ["customer_code","customer","Customer Code","Customer Code / 客戶代碼"]);
+    const partName     = pick(it, ["part_name","part","Part Name"]);
+
+    const packingType  = pick(it, ["packing_type","packingType","packing"]);
+    const stickerColor = pick(it, ["label_color","labelColor","sticker_color"]);
+
+    const layout = fixUrl(pick(it, ["layout_image_url","layoutUrl","layout"]));
+    const wiFront = fixUrl(pick(it, ["wi_front_url","wiFrontUrl","wi_front"]));
+    const wiBack  = fixUrl(pick(it, ["wi_back_url","wiBackUrl","wi_back"]));
+    const labelImg = fixUrl(pick(it, ["label_image_url","labelImgUrl","label_image"]));
 
     return `
       <div class="item" data-layout="${esc(layout)}">
         <div class="info">
-          <div>
-            <span class="tag">${WORDS.labelLocation}</span>
-            <span class="k">${esc(it.location_code)}</span>
-          </div>
-          <div>
-            <span class="tag">${WORDS.labelCustomer}</span>
-            ${esc(it.customer_code)}
-          </div>
-          <div>
-            <span class="tag">${WORDS.labelPart}</span>
-            ${esc(it.part_name)}
-          </div>
+          <div><span class="tag">${WORDS.labelLocation}</span><span class="k">${esc(locationCode)}</span></div>
+          <div><span class="tag">${WORDS.labelCustomer}</span>${esc(customerCode)}</div>
+          <div><span class="tag">${WORDS.labelPart}</span>${esc(partName)}</div>
+
+          ${(packingType || stickerColor) ? `
+          <div class="pack-grid">
+            ${packingType ? `<div><span class="tag">${WORDS.labelPacking}</span><span class="k">${esc(packingType)}</span></div>` : ``}
+            ${stickerColor ? `<div><span class="tag">${WORDS.labelStickerColor}</span><span class="k">${esc(stickerColor)}</span></div>` : ``}
+          </div>` : ``}
 
           <div class="wi-actions">
-            ${wiFront ? `<button type="button" onclick="event.stopPropagation(); openModal('${esc(wiFront)}')">WI หน้าเครื่อง</button>` : ``}
-            ${wiBack  ? `<button type="button" onclick="event.stopPropagation(); openModal('${esc(wiBack)}')">WI หลังเครื่อง</button>` : ``}
-            ${label   ? `<button type="button" class="secondary" onclick="event.stopPropagation(); openModal('${esc(label)}')">สติ๊กเกอร์</button>` : ``}
+            ${wiFront ? `<button class="wi-btn" type="button" data-src="${esc(wiFront)}">WI หน้าเครื่อง</button>` : ``}
+            ${wiBack  ? `<button class="wi-btn" type="button" data-src="${esc(wiBack)}">WI หลังเครื่อง</button>` : ``}
+            ${labelImg ? `<button class="wi-btn secondary" type="button" data-src="${esc(labelImg)}">สติ๊กเกอร์</button>` : ``}
           </div>
         </div>
 
@@ -330,7 +351,15 @@
     return `<div class="grid">${items.map(cardItem).join("")}</div>`;
   }
 
-  // คลิกการ์ด = เปิด Layout (ถ้ามี)
+  // คลิกปุ่ม WI -> เปิดรูป (ไม่ให้ไปเปิด layout)
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest(".wi-btn");
+    if(!btn) return;
+    e.stopPropagation();
+    openModal(btn.getAttribute("data-src"));
+  });
+
+  // คลิกการ์ด -> เปิด layout
   document.addEventListener("click", (e) => {
     const item = e.target.closest(".item[data-layout]");
     if (!item) return;
@@ -338,7 +367,6 @@
     if (src) openModal(src);
   });
 
-  // Actions
   el.btnSearch.onclick = async () => {
     const q = el.q.value.trim();
     if(!q) return;
@@ -369,7 +397,6 @@
     showLoading();
     try{
       const data = await jsonp(`${API_BASE}?action=customer&code=${encodeURIComponent(code)}`);
-      // แสดงเป็นรายการรวม (ง่าย) — เดี๋ยวค่อยทำสรุปแยก location ได้
       const items = (data.locations || []).flatMap(g => g.items || []);
       showOut(renderGrid(items));
     } catch(e){
@@ -391,7 +418,6 @@
 
   el.btnMore.onclick = loadMore;
 
-  // Start
   showLoading();
   applyWords();
   loadMore();
