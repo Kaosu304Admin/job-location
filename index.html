@@ -11,7 +11,6 @@
   --brand-red-dark:#9b0f18;
   --brand-blue:#1d4ed8;
   --bg:#f8fafc;
-  --card:#ffffff;
   --border:#e5e7eb;
   --text:#111827;
   --muted:#6b7280;
@@ -53,7 +52,6 @@ body{
   box-shadow:0 18px 45px rgba(0,0,0,.16);
 }
 
-/* body: info left / layout right */
 .item-body{
   display:flex;
   gap:14px;
@@ -81,7 +79,6 @@ body{
   box-shadow:0 10px 24px rgba(0,0,0,.12);
 }
 
-/* text */
 .tag{
   display:inline-block;
   padding:2px 10px;
@@ -173,8 +170,8 @@ body{
 
 <script>
 // ================= CONFIG =================
-// 🔴 แก้เป็น URL /exec ของคุณ
-const API_BASE = "https://script.google.com/macros/s/XXXX/exec";
+// 🔴 ใส่ URL /exec ของคุณตรงนี้
+const API_BASE = "https://script.google.com/macros/s/PUT_YOUR_SCRIPT_ID_HERE/exec";
 
 // ================= JSONP =================
 function jsonp(url){
@@ -223,15 +220,33 @@ function cardItem(it){
   `;
 }
 
-// ================= LOAD DATA =================
+// ================= LOAD =================
 async function load(){
-  const res = await jsonp(API_BASE + "?action=list&limit=200");
-  if(!res.ok){
-    alert("โหลดข้อมูลไม่สำเร็จ");
-    return;
+  try{
+    const res = await jsonp(API_BASE + "?action=list&limit=200");
+
+    console.log("API RESPONSE:", res);
+
+    if(!res || !res.ok){
+      document.getElementById("list").innerHTML =
+        "<div>❌ API ไม่ส่ง ok:true</div>";
+      return;
+    }
+
+    if(!res.items || res.items.length === 0){
+      document.getElementById("list").innerHTML =
+        "<div>⚠️ ไม่มีข้อมูลใน DATA</div>";
+      return;
+    }
+
+    document.getElementById("list").innerHTML =
+      res.items.map(cardItem).join("");
+
+  }catch(err){
+    document.getElementById("list").innerHTML =
+      "<div>❌ เรียก API ไม่ได้</div>";
+    console.error(err);
   }
-  document.getElementById("list").innerHTML =
-    res.items.map(cardItem).join("");
 }
 load();
 
