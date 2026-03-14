@@ -173,3 +173,34 @@ function cardItem(it){
         <div><span class="tag">ลูกค้า</span>${it.customer_code}</div>
         <div><span class="tag">งาน</span>${it.part_name}</div>
 
+        <div class="layout-box">
+          <img src="${it.layout_image_url}"
+               onclick="openModal('${it.layout_image_url}')"
+               alt="layout">
+        </div>
+      </div>
+
+      <div class="wi-bar">
+        <button onclick="event.stopPropagation(); openModal('${it.wi_front_url}')">WI หน้าเครื่อง</button>
+        <button onclick="event.stopPropagation(); openModal('${it.wi_back_url}')">WI หลังเครื่อง</button>
+        <button class="secondary" onclick="event.stopPropagation(); openModal('${it.label_image_url}')">สติ๊กเกอร์</button>
+      </div>
+    </div>
+  `;
+}
+
+// render
+document.getElementById("list").innerHTML = DATA.map(cardItem).join("");
+
+// modal
+function openModal(src){
+  document.getElementById("modalImg").src = src;
+  document.getElementById("modal").style.display = "flex";
+}
+function closeModal(){
+  document.getElementById("modal").style.display = "none";
+  document.getElementById("modalImg").src = "";
+}
+</script>
+</body>
+</html>
