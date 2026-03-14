@@ -28,116 +28,76 @@ body{
 .wrap{max-width:1200px;margin:auto;padding:16px}
 
 /* ===== HEADER ===== */
-.header{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  margin-bottom:14px;
-}
+.header{display:flex;align-items:center;gap:12px;margin-bottom:14px}
 .logo{
-  width:42px;height:42px;
-  border-radius:10px;
-  background:#fff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  width:42px;height:42px;border-radius:10px;background:#fff;
+  display:flex;align-items:center;justify-content:center;
   box-shadow:0 6px 18px rgba(0,0,0,.12);
+  overflow:hidden;
 }
 .logo img{max-width:80%;max-height:80%}
 .title{font-size:20px;font-weight:800}
 
 /* ===== SEARCH ===== */
 .search-card{
-  background:#fff;
-  border-radius:18px;
-  padding:14px;
-  margin-bottom:12px;
+  background:#fff;border-radius:18px;padding:14px;margin-bottom:12px;
   box-shadow:0 10px 30px rgba(0,0,0,.08);
 }
 .row{display:flex;gap:8px;flex-wrap:wrap}
 input,button{
-  height:46px;
-  border-radius:12px;
-  padding:0 14px;
-  font-size:15px;
+  height:46px;border-radius:12px;padding:0 14px;font-size:15px;
 }
-input{
-  flex:1;
-  border:1px solid var(--border);
-}
-button.primary{
-  background:var(--brand);
-  color:#fff;
-  border:none;
-  cursor:pointer;
-}
+input{flex:1;border:1px solid var(--border);outline:none}
+input:focus{border-color:rgba(193,18,31,.35);box-shadow:0 0 0 3px rgba(193,18,31,.12)}
+button.primary{background:var(--brand);color:#fff;border:none;cursor:pointer}
 button.primary:hover{background:var(--brand-dark)}
-button.secondary{
-  background:#eef2ff;
-  color:var(--blue);
-  border:none;
-  cursor:pointer;
-}
+button.secondary{background:#eef2ff;color:var(--blue);border:none;cursor:pointer}
 
-/* ===== FILTER BAR ===== */
+/* ===== FILTER BAR (ปุ่มเล็ก + ตัวเลข) ===== */
 .filter-bar{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  margin-bottom:18px;
+  display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;align-items:center;
 }
 .filter-bar button{
-  height:40px;
-  padding:0 14px;
-  border-radius:999px;
-  font-size:14px;
+  height:40px;padding:0 14px;border-radius:999px;font-size:14px;border:none;cursor:pointer;
+  display:flex;align-items:center;gap:6px;
 }
+.filter-bar button span{font-weight:800}
+.filter-bar button.primary{background:var(--brand);color:#fff}
+.filter-bar button.secondary{background:#eef2ff;color:var(--blue)}
 .filter-bar button.active{
-  background:var(--brand);
-  color:#fff;
+  background:var(--brand)!important;
+  color:#fff!important;
 }
+.small-note{font-size:12px;color:var(--muted);margin-left:auto}
 
 /* ===== GRID ===== */
 .grid{
-  display:grid;
-  gap:18px;
+  display:grid;gap:18px;
   grid-template-columns:repeat(auto-fit,minmax(360px,1fr));
 }
 
 /* ===== CARD ===== */
 .item{
-  background:#fff;
-  border-radius:20px;
-  border:1px solid var(--border);
-  overflow:hidden;
-  cursor:pointer;
+  background:#fff;border-radius:20px;border:1px solid var(--border);
+  overflow:hidden;cursor:pointer;
   transition:transform .25s ease, box-shadow .25s ease;
+  position:relative;
 }
-.item:hover{
-  transform:translateY(-6px);
-  box-shadow:0 22px 55px rgba(0,0,0,.18);
+.item:hover{transform:translateY(-6px);box-shadow:0 22px 55px rgba(0,0,0,.18)}
+.item.active{border-color:var(--brand);box-shadow:0 26px 65px rgba(193,18,31,.35)}
+.item::after{
+  content:"";position:absolute;inset:0;border-radius:20px;pointer-events:none;
 }
-.item.active{
-  border-color:var(--brand);
-  box-shadow:0 26px 65px rgba(193,18,31,.35);
+.item.active::after{
+  box-shadow:0 0 0 2px rgba(193,18,31,.45),0 30px 80px rgba(193,18,31,.25);
 }
-
-.item-body{
-  display:flex;
-  gap:14px;
-  padding:16px;
-}
+.item-body{display:flex;gap:14px;padding:16px}
 
 /* ===== INFO ===== */
 .info{flex:1}
 .badge{
-  display:inline-block;
-  padding:3px 12px;
-  border-radius:999px;
-  font-size:12px;
-  margin-right:6px;
-  background:#eef2ff;
-  color:var(--blue);
+  display:inline-block;padding:3px 12px;border-radius:999px;font-size:12px;margin-right:6px;
+  background:#eef2ff;color:var(--blue);
 }
 .badge.ok{background:#dcfce7;color:var(--green)}
 .badge.warn{background:#fee2e2;color:var(--red)}
@@ -147,51 +107,65 @@ button.secondary{
 /* ===== LAYOUT ===== */
 .layout{width:180px}
 .layout img{
-  width:100%;
-  height:150px;
-  object-fit:cover;
-  border-radius:14px;
+  width:100%;height:150px;object-fit:cover;border-radius:14px;
   box-shadow:0 10px 24px rgba(0,0,0,.12);
   cursor:pointer;
 }
 
 /* ===== WI BAR ===== */
 .wi-bar{
-  display:flex;
-  gap:10px;
-  padding:12px;
-  border-top:1px solid var(--border);
+  display:flex;gap:10px;padding:12px;border-top:1px solid var(--border);
   background:#fafafa;
 }
 .wi-bar button{
-  flex:1;
-  height:42px;
-  border-radius:12px;
-  border:none;
-  font-size:14px;
+  flex:1;height:42px;border-radius:12px;border:none;font-size:14px;cursor:pointer;
 }
-.wi-bar button.on{
-  background:var(--brand);
-  color:#fff;
-}
-.wi-bar button.off{
-  background:#e5e7eb;
-  color:#6b7280;
-}
+.wi-bar button.on{background:var(--brand);color:#fff}
+.wi-bar button.on:hover{background:var(--brand-dark)}
+.wi-bar button.off{background:#e5e7eb;color:#6b7280;cursor:not-allowed}
 
 /* ===== MODAL ===== */
 .modal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.75);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:9999;
+  position:fixed;inset:0;background:rgba(0,0,0,.75);
+  display:none;align-items:center;justify-content:center;z-index:9999;
 }
-.modal img{
-  max-width:95vw;
-  max-height:90vh;
+.modal img{max-width:95vw;max-height:90vh;object-fit:contain}
+
+/* ===== LOADING OVERLAY ===== */
+.loading-overlay{
+  position:fixed;inset:0;background:rgba(255,255,255,.86);
+  backdrop-filter:blur(4px);
+  display:none;align-items:center;justify-content:center;z-index:20000;
+}
+.loading-box{
+  background:#fff;padding:28px 36px;border-radius:22px;text-align:center;
+  box-shadow:0 24px 60px rgba(0,0,0,.2);
+  min-width:260px;
+}
+.loading-logo{
+  width:70px;margin-bottom:14px;
+  animation:logoBounce 1.3s ease-in-out infinite;
+}
+@keyframes logoBounce{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-10px)}
+}
+.spinner{
+  width:38px;height:38px;border:4px solid #e5e7eb;border-top:4px solid var(--brand);
+  border-radius:50%;margin:10px auto;animation:spin 1s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:14px;color:#374151}
+.loading-sub{font-size:12px;color:var(--muted);margin-top:6px}
+
+/* ===== MOBILE ===== */
+@media (max-width:640px){
+  .grid{grid-template-columns:1fr}
+  .item-body{flex-direction:column-reverse}
+  .layout{width:100%}
+  .layout img{height:200px}
+  .wi-bar{flex-direction:column}
+  .small-note{margin-left:0;width:100%}
 }
 </style>
 </head>
@@ -211,17 +185,18 @@ button.secondary{
   <div class="search-card">
     <div class="row">
       <input id="q" placeholder="ค้นหางาน / ลูกค้า / ตำแหน่ง">
-      <button class="primary" onclick="doSearch()">ค้นหา</button>
-      <button class="secondary" onclick="loadList()">แสดงทั้งหมด</button>
+      <button class="primary" id="btnSearch">ค้นหา</button>
+      <button class="secondary" id="btnShowAll">แสดงทั้งหมด</button>
     </div>
   </div>
 
-  <!-- FILTER -->
+  <!-- FILTER (ปุ่มเล็ก + ตัวเลข) -->
   <div class="filter-bar">
-    <button id="btnAll" class="primary active" onclick="setFilter('all')">ทั้งหมด</button>
-    <button id="btnOK" class="secondary" onclick="setFilter('ok')">WI ครบ</button>
-    <button id="btnNG" class="secondary" onclick="setFilter('ng')">WI ยังไม่ครบ</button>
-    <button class="secondary" onclick="reloadData()">🔄 Reload</button>
+    <button id="btnAll" class="primary active">ทั้งหมด (<span id="sumAll">0</span>)</button>
+    <button id="btnOK" class="secondary">✅ WI ครบ (<span id="sumOK">0</span>)</button>
+    <button id="btnNG" class="secondary">⚠️ WI ยังไม่ครบ (<span id="sumNG">0</span>)</button>
+    <button id="btnReload" class="secondary">🔄 Reload</button>
+    <div class="small-note" id="loadedNote">กำลังโหลด...</div>
   </div>
 
   <!-- RESULT -->
@@ -230,33 +205,62 @@ button.secondary{
 
 <!-- MODAL -->
 <div id="modal" class="modal" onclick="this.style.display='none'">
-  <img id="modalImg">
+  <img id="modalImg" alt="preview">
+</div>
+
+<!-- LOADING -->
+<div id="loading" class="loading-overlay">
+  <div class="loading-box">
+    <img src="assets/logo.png" class="loading-logo" alt="logo">
+    <div class="spinner"></div>
+    <div class="loading-text" id="loadingText">กำลังโหลดข้อมูล...</div>
+    <div class="loading-sub" id="loadingSub">กรุณารอสักครู่</div>
+  </div>
 </div>
 
 <script>
+// ===== CONFIG =====
 const API_BASE="https://script.google.com/macros/s/AKfycbyJwO_mlyCF3ZOT_N2GPcLzUYX1vDOPNPsZAPwKz9mFbUEA4TpaDR4m3uTi362mwfqJMA/exec";
+const LIMIT = 200; // Apps Script cap
 
-let ALL_ITEMS=[];
+// ===== STATE =====
+let ALL_ITEMS = [];      // ทั้งฐาน (หลังโหลดครบ)
+let VIEW_ITEMS = [];     // ที่โชว์ตาม filter
+let FILTER_MODE = "all"; // all | ok | ng
+let mode = "list";       // list | search
+let offset = 0;
+let finished = false;
+let fetching = false;
 
-const ok=v=>v && v!=="#N/A";
-const hasWI=it=>ok(it.wi_front_url)||ok(it.wi_back_url)||ok(it.label_image_url);
+// ===== HELPERS =====
+const ok = v => v && v !== "#N/A";
+const hasWI = it => ok(it.wi_front_url) || ok(it.wi_back_url) || ok(it.label_image_url);
 
-// JSONP (แก้ &amp; → &)
+// JSONP ต้องใช้ & ใน JS
 function jsonp(url){
-  return new Promise(res=>{
+  return new Promise((resolve,reject)=>{
     const cb="cb_"+Math.random().toString(36).slice(2);
-    window[cb]=d=>{delete window[cb];s.remove();res(d)};
+    window[cb]=d=>{delete window[cb];s.remove();resolve(d)};
     const s=document.createElement("script");
+    s.onerror=()=>{delete window[cb];s.remove();reject(new Error("JSONP failed"))};
     s.src = url + (url.includes("?") ? "&" : "?") + "callback=" + cb;
     document.body.appendChild(s);
   });
 }
 
+function showLoading(text="กำลังโหลดข้อมูล...", sub="กรุณารอสักครู่"){
+  loadingText.textContent = text;
+  loadingSub.textContent = sub;
+  loading.style.display="flex";
+}
+function hideLoading(){ loading.style.display="none"; }
+
 function openModal(src){
-  modalImg.src=src;
+  modalImg.src = String(src||"").replace(/&amp;/g,"&");
   modal.style.display="flex";
 }
 
+// ===== UI RENDER =====
 function card(it){
   return `
   <div class="item" onclick="setActive(this)">
@@ -278,9 +282,9 @@ function card(it){
       </div>
     </div>
     <div class="wi-bar" onclick="event.stopPropagation()">
-      <button class="${ok(it.wi_front_url)?'on':'off'}" onclick="${ok(it.wi_front_url)?`openModal('${it.wi_front_url}')`:''}">WI หน้า</button>
-      <button class="${ok(it.wi_back_url)?'on':'off'}" onclick="${ok(it.wi_back_url)?`openModal('${it.wi_back_url}')`:''}">WI หลัง</button>
-      <button class="${ok(it.label_image_url)?'on':'off'}" onclick="${ok(it.label_image_url)?`openModal('${it.label_image_url}')`:''}">สติ๊กเกอร์</button>
+      <button class="${ok(it.wi_front_url)?'on':'off'}" ${ok(it.wi_front_url)?`onclick="openModal('${it.wi_front_url}')"`:"disabled"}>WI หน้า</button>
+      <button class="${ok(it.wi_back_url)?'on':'off'}" ${ok(it.wi_back_url)?`onclick="openModal('${it.wi_back_url}')"`:"disabled"}>WI หลัง</button>
+      <button class="${ok(it.label_image_url)?'on':'off'}" ${ok(it.label_image_url)?`onclick="openModal('${it.label_image_url}')"`:"disabled"}>สติ๊กเกอร์</button>
     </div>
   </div>`;
 }
@@ -290,46 +294,112 @@ function setActive(el){
   el.classList.add("active");
 }
 
-function setFilter(type){
+// นับตัวเลขจากทั้งฐาน (ALL_ITEMS)
+function updateCounts(){
+  sumAll.textContent = ALL_ITEMS.length;
+  sumOK.textContent  = ALL_ITEMS.filter(hasWI).length;
+  sumNG.textContent  = ALL_ITEMS.filter(i=>!hasWI(i)).length;
+}
+
+// แสดงตาม filter (ต้องกรองจากทั้งฐาน!)
+function applyFilter(){
+  // active button
   btnAll.classList.remove("active");
   btnOK.classList.remove("active");
   btnNG.classList.remove("active");
 
   let items = ALL_ITEMS;
 
-  if(type==="ok"){
+  if(FILTER_MODE==="ok"){
     items = ALL_ITEMS.filter(hasWI);
     btnOK.classList.add("active");
-  } else if(type==="ng"){
+  }else if(FILTER_MODE==="ng"){
     items = ALL_ITEMS.filter(i=>!hasWI(i));
     btnNG.classList.add("active");
-  } else {
+  }else{
     btnAll.classList.add("active");
   }
 
-  list.innerHTML = items.map(card).join("");
+  VIEW_ITEMS = items;
+  list.innerHTML = VIEW_ITEMS.map(card).join("");
+  loadedNote.textContent = `แสดง ${VIEW_ITEMS.length} รายการ (จากทั้งหมด ${ALL_ITEMS.length})`;
 }
 
-function reloadData(){ loadList(); }
+// ===== DATA LOAD: โหลดทั้งฐานแบบค่อยๆ ทีละ 200 =====
+async function loadAllPages(){
+  if(fetching) return;
+  fetching = true;
+  mode = "list";
+  offset = 0;
+  finished = false;
+  ALL_ITEMS = [];
+  list.innerHTML = "";
+  updateCounts();
+  applyFilter();
 
-async function loadList(){
-  const r = await jsonp(API_BASE+"?action=list&limit=200");
-  ALL_ITEMS = r.items || [];
-  setFilter("all");
+  showLoading("กำลังโหลดฐานข้อมูล...", "กำลังอ่านข้อมูลจากชีท (โหลดทีละชุด)");
+
+  while(!finished){
+    const r = await jsonp(API_BASE + `?action=list&limit=${LIMIT}&offset=${offset}`);
+    const items = r.items || [];
+    ALL_ITEMS = ALL_ITEMS.concat(items);
+    offset += items.length;
+
+    // progress
+    loadingSub.textContent = `โหลดแล้ว ${ALL_ITEMS.length} รายการ...`;
+
+    if(items.length < LIMIT) finished = true;
+
+    // หน่วงนิดนึงให้ไม่กระชาก/ไม่ยิงถี่ (ช่วยเสถียร)
+    await new Promise(res=>setTimeout(res, 80));
+  }
+
+  updateCounts();
+  applyFilter();
+  hideLoading();
+  fetching = false;
 }
 
+// ===== SEARCH (ถ้าค้นหา จะกรองเฉพาะผลค้นหา ไม่ไปโหลดทั้งฐานเพิ่ม) =====
 async function doSearch(){
   const q = qEl.value.trim();
-  const r = q
-    ? await jsonp(API_BASE+"?action=search&q="+encodeURIComponent(q))
-    : await jsonp(API_BASE+"?action=list&limit=200");
+  if(!q) return loadAllPages();
 
-  ALL_ITEMS = r.items || r.results || [];
-  setFilter("all");
+  showLoading("กำลังค้นหา...", q);
+  mode = "search";
+
+  const r = await jsonp(API_BASE + "?action=search&q=" + encodeURIComponent(q));
+  ALL_ITEMS = r.results || [];
+  updateCounts();     // นับจากผลค้นหาในช่วงค้นหา
+  FILTER_MODE="all";
+  applyFilter();
+  hideLoading();
 }
 
-const qEl=document.getElementById("q");
-loadList();
+function showAll(){
+  qEl.value = "";
+  FILTER_MODE="all";
+  return loadAllPages();
+}
+
+function reloadData(){
+  return loadAllPages();
+}
+
+// ===== EVENTS =====
+const qEl = document.getElementById("q");
+btnSearch.onclick = doSearch;
+btnShowAll.onclick = showAll;
+btnReload.onclick = reloadData;
+
+btnAll.onclick = ()=>{ FILTER_MODE="all"; applyFilter(); };
+btnOK.onclick  = ()=>{ FILTER_MODE="ok";  applyFilter(); };
+btnNG.onclick  = ()=>{ FILTER_MODE="ng";  applyFilter(); };
+
+qEl.addEventListener("keydown",(e)=>{ if(e.key==="Enter") doSearch(); });
+
+// ===== START =====
+loadAllPages();
 </script>
 </body>
 </html>
