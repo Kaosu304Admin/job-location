@@ -1,152 +1,77 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ระบบระบุตำแหน่งงาน</title>
 
 <style>
-:root{
-  --brand-red:#c1121f;
-  --brand-blue:#1d4ed8;
-  --bg:#f8fafc;
-  --border:#e5e7eb;
-  --muted:#6b7280;
-}
-*{box-sizing:border-box}
-body{margin:0;font-family:system-ui;background:var(--bg)}
-.wrap{max-width:1100px;margin:auto;padding:14px}
+body{font-family:system-ui;background:#f8fafc;margin:0}
+.wrap{max-width:1000px;margin:auto;padding:16px}
 
-/* header */
-.header{display:flex;gap:12px;margin-bottom:12px}
-.logo-box{width:40px;height:40px;border:1px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center}
-.logo-box img{max-width:100%;max-height:100%}
-h1{margin:0;font-size:18px}
-.subtitle{font-size:13px;color:var(--muted)}
-
-/* card */
-.card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:12px;margin-bottom:12px}
-.row{display:flex;gap:8px;flex-wrap:wrap}
-input,button{height:44px;border-radius:12px;padding:0 12px}
-input{flex:1;border:1px solid var(--border)}
-button{border:none;cursor:pointer;background:var(--brand-red);color:#fff}
-button.secondary{background:#eef2ff;color:var(--brand-blue);border:1px solid #c7d2fe}
-
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px}
-
-.item{
-  border:1px solid var(--border);
-  border-radius:16px;
-  padding:14px;
+.card{
   background:#fff;
-  display:flex;
-  gap:12px;
-  cursor:pointer;
+  border-radius:14px;
+  padding:16px;
+  margin-bottom:16px;
+  box-shadow:0 8px 24px rgba(0,0,0,.08)
 }
-.item:hover{transform:translateY(-2px)}
-.info{flex:1}
-.thumb{width:120px}
-.thumb img{width:100%;border-radius:10px}
+.item{
+  border:1px solid #e5e7eb;
+  border-radius:14px;
+  padding:14px;
+  margin-bottom:12px
+}
+.tag{font-size:12px;color:#555}
+.k{font-weight:700}
 
-.tag{font-size:12px;background:#eef2ff;border:1px solid #c7d2fe;border-radius:999px;padding:2px 8px;margin-right:6px}
-.k{font-weight:600}
-
-.pack-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
-.wi-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.wi-actions{display:flex;gap:8px;margin-top:10px}
 .wi-actions button{flex:1}
-
-.modal{
-  position:fixed;inset:0;
-  background:rgba(0,0,0,.7);
-  display:none;
-  align-items:center;
-  justify-content:center;
-}
-.modal-content{background:#fff;padding:10px;border-radius:14px}
-.modal-content img{max-width:90vw;max-height:90vh}
 </style>
 </head>
 
 <body>
 <div class="wrap">
-
-<div class="header">
-  <div class="logo-box"><img src="assets/logo.png"></div>
-  <div>
-    <h1>ระบบระบุตำแหน่งงาน</h1>
-    <div class="subtitle">ค้นหาตำแหน่งจัดเก็บ • ชื่องาน • ลูกค้า</div>
-  </div>
-</div>
-
-<div class="card">
-  <div class="row">
-    <input id="q" placeholder="ค้นหา">
-    <button id="btnSearch">ค้นหา</button>
-  </div>
-</div>
-
-<div class="card">
-  <div id="list" class="grid"></div>
-</div>
-
-</div>
-
-<div id="modal" class="modal">
-  <div class="modal-content">
-    <img id="modalImg">
-  </div>
+  <h2>รายการงาน</h2>
+  <div id="list"></div>
 </div>
 
 <script>
-const API="https://script.google.com/macros/s/AKfycbyh1nb5-K1oI5Sa9qeaVirBfj_ent1OW0j8Mzpvyk_JOFQKWWwyut2A_GWykkTA8fsBvA/exec";
+const API = "https://script.google.com/macros/s/AKfycbyh1nb5-K1oI5Sa9qeaVirBfj_ent1OW0j8Mzpvyk_JOFQKWWwyut2A_GWykkTA8fsBvA/exec";
 
-const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));
-const fix=u=>String(u??"").replace(/&amp;/g,"&");
-
-const modal=document.getElementById("modal");
-const modalImg=document.getElementById("modalImg");
-
-function openModal(src){
-  modalImg.src=fix(src);
-  modal.style.display="flex";
+function openImg(url){
+  window.open(url,"_blank");
 }
-modal.onclick=()=>modal.style.display="none";
 
 function card(it){
   return `
-  <div class="item" data-layout="${esc(it.layout_image_url||"")}">
-    <div class="info">
-      <div><span class="tag">ตำแหน่ง</span><span class="k">${esc(it.location_code||"")}</span></div>
-      <div><span class="tag">งาน</span>${esc(it.part_name||"")}</div>
-
-      <div class="pack-grid">
-        <div><span class="tag">แพ็คกิ้ง</span>${esc(it.packing_type||"")}</div>
-        <div><span class="tag">สีสติ๊กเกอร์</span>${esc(it.label_color||"")}</div>
-      </div>
+    <div class="item">
+      <div><span class="tag">ตำแหน่ง:</span> <span class="k">${it.location_code||""}</span></div>
+      <div><span class="tag">งาน:</span> ${it.part_name||""}</div>
+      <div><span class="tag">แพ็คกิ้ง:</span> ${it.packing_type||""}</div>
+      <div><span class="tag">สีสติ๊กเกอร์:</span> ${it.label_color||""}</div>
 
       <div class="wi-actions">
-        ${it.wi_front_url?`<button onclick="event.stopPropagation();openModal('${esc(it.wi_front_url)}')">WI หน้าเครื่อง</button>`:""}
-        ${it.wi_back_url?`<button onclick="event.stopPropagation();openModal('${esc(it.wi_back_url)}')">WI หลังเครื่อง</button>`:""}
-        ${it.label_image_url?`<button class="secondary" onclick="event.stopPropagation();openModal('${esc(it.label_image_url)}')">สติ๊กเกอร์</button>`:""}
+        ${it.wi_front_url?`<button onclick="openImg('${it.wi_front_url}')">WI หน้าเครื่อง</button>`:""}
+        ${it.wi_back_url?`<button onclick="openImg('${it.wi_back_url}')">WI หลังเครื่อง</button>`:""}
+        ${it.label_image_url?`<button onclick="openImg('${it.label_image_url}')">สติ๊กเกอร์</button>`:""}
       </div>
     </div>
-    ${it.layout_image_url?`<div class="thumb"><img src="${esc(it.layout_image_url)}"></div>`:""}
-  </div>`;
+  `;
 }
 
-async function load(){
+function load(){
   const cb="cb"+Math.random().toString(36).slice(2);
-  return new Promise(res=>{
-    window[cb]=d=>res(d);
-    const s=document.createElement("script");
-    s.src=`${API}?action=list&limit=20&callback=${cb}`;
-    document.body.appendChild(s);
-  });
+  window[cb]=res=>{
+    document.getElementById("list").innerHTML =
+      res.items.map(card).join("");
+  };
+  const s=document.createElement("script");
+  s.src=`${API}?action=list&limit=20&callback=${cb}`;
+  document.body.appendChild(s);
 }
 
-load().then(d=>{
-  document.getElementById("list").innerHTML=d.items.map(card).join("");
-});
+load();
 </script>
 </body>
 </html>
