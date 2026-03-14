@@ -1,436 +1,167 @@
 <!doctype html>
 <html lang="th">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ระบบระบุตำแหน่งงาน</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ระบบระบุตำแหน่งงาน</title>
 
-  <style>
-    :root{
-      --brand-red:#c1121f;
-      --brand-red-dark:#9b0f18;
-      --brand-blue:#1d4ed8;
+<style>
+:root{
+  --brand-red:#c1121f;
+  --brand-red-dark:#9b0f18;
+  --brand-blue:#1d4ed8;
+  --bg:#f8fafc;
+  --card:#ffffff;
+  --border:#e5e7eb;
+  --text:#111827;
+  --muted:#6b7280;
+}
 
-      --bg:#f8fafc;
-      --card:#ffffff;
-      --border:#e5e7eb;
-      --text:#111827;
-      --muted:#6b7280;
-    }
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,Segoe UI,Arial;
+  background:var(--bg);
+  color:var(--text);
+}
+.wrap{max-width:1100px;margin:0 auto;padding:14px}
 
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:system-ui,-apple-system,Segoe UI,Arial;
-      background:var(--bg);
-      color:var(--text);
-    }
-    .wrap{max-width:1100px;margin:0 auto;padding:14px}
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:14px;
+  margin:14px 0;
+}
 
-    .header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
-    .logo-box{
-      width:40px;height:40px;border-radius:10px;background:#fff;border:1px solid var(--border);
-      display:flex;align-items:center;justify-content:center;overflow:hidden;flex:0 0 auto;
-    }
-    .logo-box img{
-      max-width:100%;max-height:100%;object-fit:contain;display:block;margin:auto;
-      transform:translateY(-1px);
-    }
-    h1{font-size:18px;margin:0}
-    .subtitle{font-size:13px;color:var(--muted)}
-
-    .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px;margin:12px 0}
-    .row{display:flex;gap:8px;flex-wrap:wrap}
-
-    input,button{height:44px;border-radius:12px;padding:0 12px;font-size:15px}
-    input{flex:1;min-width:200px;border:1px solid var(--border);outline:none}
-    input:focus{border-color:rgba(29,78,216,.45);box-shadow:0 0 0 3px rgba(29,78,216,.12)}
-
-    button{background:var(--brand-red);color:#fff;border:none;cursor:pointer}
-    button:hover{background:var(--brand-red-dark)}
-    button.secondary{background:#eef2ff;color:var(--brand-blue);border:1px solid #c7d2fe}
-    button:disabled{opacity:.5;cursor:not-allowed}
-
-    .muted{font-size:13px;color:var(--muted);line-height:1.4}
-
-    .grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));}
-
-    .item{
-      border:1px solid var(--border);
-      border-radius:14px;
-      padding:12px;
-      background:#fff;
-      display:flex;
-      gap:12px;
-      align-items:flex-start;
-      cursor:pointer;
-      transition:.12s ease;
-    }
-    .item:hover{background:#fafafa}
-    .item .info{flex:1}
-    .item .thumb{width:120px;min-width:120px}
-    .item .thumb img{width:100%;max-height:90px;object-fit:cover;border-radius:10px;margin:0;display:block}
-
-    .tag{
-      display:inline-block;
-      padding:2px 10px;
-      border-radius:999px;
-      background:#eef2ff;
-      border:1px solid #c7d2fe;
-      color:var(--brand-blue);
-      font-size:12px;
-      margin-right:6px;
-    }
-    .k{font-weight:600}
-
-    @media (max-width:640px){
-      .grid{grid-template-columns:1fr}
-      .item{align-items:center}
-      .item .thumb{width:90px;min-width:90px}
-      button{flex:1}
-      .logo-box{width:38px;height:38px}
-    }
-
-    .modal{
-      position:fixed;inset:0;background:rgba(0,0,0,.7);
-      display:none;align-items:center;justify-content:center;z-index:9999;
-    }
-    .modal-content{background:#fff;border-radius:14px;padding:10px;max-width:95vw;max-height:95vh}
-    .modal-content img{width:100%;max-height:90vh;object-fit:contain;border-radius:10px;display:block}
-    /* ================= WI CARD (Luxury Minimal) ================= */
+/* ===== WI CARD ===== */
 .wi-card{
   background:#fff;
   border-radius:18px;
   padding:18px;
-  margin:18px 0;
-  border:1px solid rgba(17,24,39,.06);
-  box-shadow:
-    0 16px 40px rgba(0,0,0,.10),
-    0 4px 12px rgba(0,0,0,.06);
-  transition:transform .22s ease, box-shadow .22s ease;
+  border:1px solid rgba(0,0,0,.06);
+  box-shadow:0 16px 40px rgba(0,0,0,.12);
+  transition:.25s ease;
 }
-
 .wi-card:hover{
-  transform:translateY(-2px);
-  box-shadow:
-    0 22px 55px rgba(0,0,0,.14),
-    0 6px 16px rgba(0,0,0,.08);
+  transform:translateY(-3px);
+  box-shadow:0 22px 55px rgba(0,0,0,.18);
 }
-
 .wi-header{
   display:flex;
   justify-content:space-between;
-  align-items:center;
   margin-bottom:12px;
 }
-
-.wi-title{
-  font-size:20px;
-  font-weight:800;
-  letter-spacing:.2px;
-}
-
-.wi-sub{
-  font-size:12px;
-  color:var(--muted);
-}
+.wi-title{font-size:20px;font-weight:800}
+.wi-sub{font-size:12px;color:var(--muted)}
 
 .wi-info{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:12px;
-  margin:12px 0 16px;
+  margin-bottom:14px;
 }
-
-.wi-info span{
-  display:block;
-  font-size:12px;
-  color:var(--muted);
-}
-
-.wi-info b{
-  font-size:15px;
-}
+.wi-info span{font-size:12px;color:var(--muted)}
+.wi-info b{font-size:15px}
 
 .wi-actions{
   display:flex;
   gap:10px;
   flex-wrap:wrap;
 }
-
-.wi-actions button{
-  flex:1;
+button{
+  height:44px;
+  border-radius:12px;
+  border:none;
+  cursor:pointer;
+  padding:0 14px;
+  background:var(--brand-red);
+  color:#fff;
 }
-/* ============================================================ */
-  </style>
+button.secondary{
+  background:#eef2ff;
+  color:var(--brand-blue);
+}
+
+/* ===== MODAL ===== */
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.7);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+.modal-content{
+  background:#fff;
+  border-radius:16px;
+  padding:10px;
+  max-width:95vw;
+  max-height:95vh;
+}
+.modal-content img{
+  width:100%;
+  max-height:90vh;
+  object-fit:contain;
+}
+</style>
 </head>
 
 <body>
 <div class="wrap">
 
-  <div class="header">
-    <div class="logo-box">
-      <img src="assets/logo.png" alt="Company Logo">
-    </div>
-    <div>
-      <h1 id="appTitle"></h1>
-      <div class="subtitle" id="appSubtitle"></div>
-    </div>
-  </div>
+<div class="card">
+  <h2>ทดสอบ WI 1 งาน</h2>
 
-  <div class="card">
-    <div class="row">
-      <input id="q">
-      <button id="btnSearch"></button>
+  <div class="wi-card">
+    <div class="wi-header">
+      <div class="wi-title">F5111/5112</div>
+      <div class="wi-sub">Work Instruction</div>
     </div>
-    <div class="row" style="margin-top:10px">
-      <input id="loc">
-      <button class="secondary" id="btnLoc"></button>
-      <input id="cus">
-      <button class="secondary" id="btnCus"></button>
-    </div>
-    <div class="muted" style="margin-top:10px">
-      • หากยังไม่ค้นหา ระบบจะแสดงรายการฐานข้อมูลด้านล่าง<br>
-      • สามารถค้นหาได้ทั้ง “ชื่องาน / ตำแหน่งจัดเก็บ / ลูกค้า”
-    </div>
-  </div>
 
-  <div id="status" class="muted"></div>
-  <div id="out" class="card" style="display:none"></div>
-  <!-- ================= WI CARD : TEST 1 PART ================= -->
-<div class="wi-card" id="wiTestCard">
-  <div class="wi-header">
-    <div class="wi-title">F5111/5112</div>
-    <div class="wi-sub">Work Instruction</div>
-  </div>
-
-  <div class="wi-info">
-    <div>
-      <span>📦 แพ็คกิ้ง</span>
-      <b>55x150G0</b>
+    <div class="wi-info">
+      <div>
+        <span>📦 แพ็คกิ้ง</span>
+        <b>55x150G0</b>
+      </div>
+      <div>
+        <span>🏷️ สีสติ๊กเกอร์</span>
+        <b>สีฟ้า</b>
+      </div>
     </div>
-    <div>
-      <span>🏷️ สีสติ๊กเกอร์</span>
-      <b>สีฟ้า</b>
-    </div>
-  </div>
 
-  <div class="wi-actions">
-    <button type="button" onclick="openModal('https://drive.google.com/uc?id=1YM-FyMyDJYoHs1-T8laNyvBl__8PWrSM')">WI หน้าเครื่อง</button>
-    <button type="button" onclick="openModal('https://drive.google.com/uc?id=1L4wxNr5lyvqfAuKTZ7w6RgCkkyEvLWAs')">WI หลังเครื่อง</button>
-    <button type="button" class="secondary" onclick="openModal('https://drive.google.com/uc?id=12EfYfvErhbsq114RSNONSbMKjIumuuyg')">ดูสติ๊กเกอร์</button>
+    <div class="wi-actions">
+      <button onclick="openModal('https://drive.google.com/uc?id=1YM-FyMyDJYoHs1-T8laNyvBl__8PWrSM')">
+        WI หน้าเครื่อง
+      </button>
+      <button onclick="openModal('https://drive.google.com/uc?id=1L4wxNr5lyvqfAuKTZ7w6RgCkkyEvLWAs')">
+        WI หลังเครื่อง
+      </button>
+      <button class="secondary" onclick="openModal('https://drive.google.com/uc?id=12EfYfvErhbsq114RSNONSbMKjIumuuyg')">
+        ดูสติ๊กเกอร์
+      </button>
+    </div>
   </div>
 </div>
-<!-- ========================================================== -->
-
-  <div class="card">
-    <div class="row" style="justify-content:space-between;align-items:center">
-      <b id="allItemsTitle"></b>
-      <button id="btnMore" class="secondary"></button>
-    </div>
-    <div id="list" class="grid" style="margin-top:10px"></div>
-  </div>
 
 </div>
 
-<div id="layoutModal" class="modal">
-  <div class="modal-content">
-    <img id="modalImage" src="" alt="layout">
+<div id="modal" class="modal" onclick="closeModal()">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <img id="modalImg">
   </div>
 </div>
 
 <script>
-const WORDS = {
-  appTitle:"ระบบระบุตำแหน่งงาน",
-  subtitle:"ค้นหาตำแหน่งจัดเก็บ • ชื่องาน • ลูกค้า",
-  placeholderSearch:"ค้นหาชื่องาน / ตำแหน่งจัดเก็บ / ลูกค้า",
-  placeholderLocation:"ตำแหน่งจัดเก็บ (เช่น A1-01)",
-  placeholderCustomer:"รหัสลูกค้า",
-  btnSearch:"ค้นหา",
-  btnLocation:"ดูตำแหน่งจัดเก็บ",
-  btnCustomer:"ดูลูกค้า",
-  btnMore:"แสดงเพิ่มเติม",
-  labelLocation:"ตำแหน่งจัดเก็บ",
-  labelCustomer:"ลูกค้า",
-  labelPart:"ชื่องาน",
-  allItems:"รายการทั้งหมด",
-  loading:"กำลังโหลดข้อมูล...",
-  notFound:"ไม่พบข้อมูล"
-};
-
-const API_BASE = "https://script.google.com/macros/s/AKfycbyh1nb5-K1oI5Sa9qeaVirBfj_ent1OW0j8Mzpvyk_JOFQKWWwyut2A_GWykkTA8fsBvA/exec";
-
-const el = {
-  appTitle: document.getElementById("appTitle"),
-  appSubtitle: document.getElementById("appSubtitle"),
-  q: document.getElementById("q"),
-  loc: document.getElementById("loc"),
-  cus: document.getElementById("cus"),
-  btnSearch: document.getElementById("btnSearch"),
-  btnLoc: document.getElementById("btnLoc"),
-  btnCus: document.getElementById("btnCus"),
-  btnMore: document.getElementById("btnMore"),
-  allItemsTitle: document.getElementById("allItemsTitle"),
-  status: document.getElementById("status"),
-  out: document.getElementById("out"),
-  list: document.getElementById("list"),
-  layoutModal: document.getElementById("layoutModal"),
-  modalImage: document.getElementById("modalImage")
-};
-
-function applyWords(){
-  el.appTitle.textContent = WORDS.appTitle;
-  el.appSubtitle.textContent = WORDS.subtitle;
-  el.q.placeholder = WORDS.placeholderSearch;
-  el.loc.placeholder = WORDS.placeholderLocation;
-  el.cus.placeholder = WORDS.placeholderCustomer;
-  el.btnSearch.textContent = WORDS.btnSearch;
-  el.btnLoc.textContent = WORDS.btnLocation;
-  el.btnCus.textContent = WORDS.btnCustomer;
-  el.btnMore.textContent = WORDS.btnMore;
-  el.allItemsTitle.textContent = WORDS.allItems;
-}
-
-const esc = (s) => String(s ?? "").replace(/[&<>"']/g, m => ({
-  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-}[m]));
-
-let offset = 0;
-const limit = 50;
-
-function jsonp(url){
-  return new Promise((resolve, reject) => {
-    const cb = "cb_" + Math.random().toString(36).slice(2);
-    const script = document.createElement("script");
-    window[cb] = (data) => { delete window[cb]; script.remove(); resolve(data); };
-    script.src = url + (url.includes("?") ? "&" : "?") + "callback=" + cb;
-    script.onerror = () => { delete window[cb]; script.remove(); reject(new Error("JSONP load failed")); };
-    document.body.appendChild(script);
-  });
-}
-
 function openModal(src){
-  if(!src) return;
-  el.modalImage.src = src;
-  el.layoutModal.style.display = "flex";
+  document.getElementById("modalImg").src = src;
+  document.getElementById("modal").style.display = "flex";
 }
 function closeModal(){
-  el.layoutModal.style.display = "none";
-  el.modalImage.src = "";
+  document.getElementById("modal").style.display = "none";
+  document.getElementById("modalImg").src = "";
 }
-el.layoutModal.addEventListener("click", closeModal);
-el.layoutModal.querySelector(".modal-content").addEventListener("click", (e)=>e.stopPropagation());
-
-function showStatus(text){ el.status.textContent = text || ""; }
-function showOut(html){
-  el.out.style.display = "block";
-  el.out.innerHTML = html;
-  el.out.scrollIntoView({behavior:"smooth", block:"start"});
-}
-
-function cardItem(it){
-  const layout = it.layout_image_url || "";
-  return `
-    <div class="item" data-layout="${esc(layout)}">
-      <div class="info">
-        <div><span class="tag">${WORDS.labelLocation}</span><span class="k">${esc(it.location_code)}</span></div>
-        <div><span class="tag">${WORDS.labelCustomer}</span>${esc(it.customer_code)}</div>
-        <div><span class="tag">${WORDS.labelPart}</span>${esc(it.part_name)}</div>
-      </div>
-      ${layout ? `
-      <div class="thumb">
-        <img src="${esc(layout)}" alt="layout">
-      </div>` : ``}
-    </div>
-  `;
-}
-
-function renderGrid(items){
-  if(!items || !items.length) return `<p class="muted">${WORDS.notFound}</p>`;
-  return `<div class="grid">${items.map(cardItem).join("")}</div>`;
-}
-
-document.addEventListener("click", (e) => {
-  if (e.target.closest("a")) return;
-  const item = e.target.closest(".item[data-layout]");
-  if (!item) return;
-  const src = item.getAttribute("data-layout");
-  if (src && src !== "null" && src !== "undefined") openModal(src);
-});
-
-el.btnSearch.onclick = async () => {
-  const q = el.q.value.trim();
-  if(!q) return;
-  showStatus(WORDS.loading);
-  try{
-    const data = await jsonp(`${API_BASE}?action=search&q=${encodeURIComponent(q)}`);
-    if(!data.ok) return showOut(`<p class="muted">❌ ${esc(data.error || "Error")}</p>`);
-    showOut(`<h3 style="margin:0 0 10px 0">ผลการค้นหา: "${esc(data.q)}" (พบ ${data.total} รายการ)</h3>` + renderGrid(data.results));
-  } catch(e){
-    showOut(`<p class="muted">❌ เรียก API ไม่สำเร็จ: ${esc(e.message)}</p>`);
-  } finally {
-    showStatus("");
-  }
-};
-
-el.btnLoc.onclick = async () => {
-  const code = el.loc.value.trim();
-  if(!code) return;
-  showStatus(WORDS.loading);
-  try{
-    const data = await jsonp(`${API_BASE}?action=location&code=${encodeURIComponent(code)}`);
-    if(!data.ok) return showOut(`<p class="muted">❌ ${esc(data.error || "Error")}</p>`);
-    showOut(`<h3 style="margin:0 0 10px 0">${WORDS.labelLocation}: ${esc(data.location_code)} — รวม ${data.count} รายการ</h3>` + renderGrid(data.items));
-  } catch(e){
-    showOut(`<p class="muted">❌ เรียก API ไม่สำเร็จ: ${esc(e.message)}</p>`);
-  } finally {
-    showStatus("");
-  }
-};
-
-el.btnCus.onclick = async () => {
-  const code = el.cus.value.trim();
-  if(!code) return;
-  showStatus(WORDS.loading);
-  try{
-    const data = await jsonp(`${API_BASE}?action=customer&code=${encodeURIComponent(code)}`);
-    if(!data.ok) return showOut(`<p class="muted">❌ ${esc(data.error || "Error")}</p>`);
-    const blocks = (data.locations || []).map(g => `
-      <div class="item" data-layout="${esc(g.meta?.layout_image_url || "")}">
-        <div class="info">
-          <div><span class="tag">${WORDS.labelLocation}</span><span class="k">${esc(g.location_code)}</span> — ${g.count} รายการ</div>
-        </div>
-        ${g.meta?.layout_image_url ? `<div class="thumb"><img src="${esc(g.meta.layout_image_url)}" alt="layout"></div>` : ``}
-      </div>
-    `).join("");
-    showOut(`<h3 style="margin:0 0 10px 0">${WORDS.labelCustomer}: ${esc(data.customer_code)} — รวมทั้งหมด ${data.total} รายการ</h3>
-      <div class="grid">${blocks || `<p class="muted">${WORDS.notFound}</p>`}</div>`);
-  } catch(e){
-    showOut(`<p class="muted">❌ เรียก API ไม่สำเร็จ: ${esc(e.message)}</p>`);
-  } finally {
-    showStatus("");
-  }
-};
-
-async function loadMore(){
-  showStatus(WORDS.loading);
-  try{
-    const d = await jsonp(`${API_BASE}?action=list&limit=${limit}&offset=${offset}`);
-    if(!d.ok){ showStatus(""); return; }
-    offset += d.returned;
-    el.list.insertAdjacentHTML("beforeend", (d.items || []).map(cardItem).join(""));
-    if(d.returned < limit) el.btnMore.disabled = true;
-  } catch(e){
-    showOut(`<p class="muted">❌ โหลดรายการไม่ได้: ${esc(e.message)}</p>`);
-  } finally {
-    showStatus("");
-  }
-}
-
-el.btnMore.onclick = loadMore;
-
-applyWords();
-loadMore();
 </script>
 </body>
 </html>
